@@ -4,7 +4,8 @@
     "author": "Henrik Joreteg <henrik@andyet.net>",
     "description": "Simple solution for compiling jade templates into vanilla JS functions for blazin' fast client-side use.",
     "dependencies": {
-        "jade": ""
+        "jade": "",
+        "uglify-js": ""
     },
     "repository": {
         "type": "git",

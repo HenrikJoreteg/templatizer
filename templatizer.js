@@ -1,6 +1,11 @@
 var jade = require('jade'),
+    uglifyjs = require('uglify-js'),
     fs = require('fs');
 
+function beautify(code) {
+    var ast = uglifyjs.parser.parse(code);
+    return uglifyjs.uglify.gen_code(ast, {beautify: true});
+}
 
 module.exports = function (templateDirectory, outputFile, watch) {
     // first we want to add the runtime code we need
@@ -19,13 +24,15 @@ module.exports = function (templateDirectory, outputFile, watch) {
         var split = file.split('.'),
             name = split[0],
             ext = split[1],
-            template;        
+            template,
+            filename = templateDirectory + '/' + file;        
         if (ext === 'jade') {
-            template = jade.compile(fs.readFileSync(templateDirectory + '/' + file), {client: true, compileDebug: false, pretty: true}).toString();
+            template = beautify(jade.compile(fs.readFileSync(filename), {client: true, compileDebug: false, pretty: true, filename: filename}).toString());
             output += [
                 '',
                 '// ' + file + ' compiled:',
-                'exports.' + name + '=' + template
+                'exports.' + name + ' = ' + template + ';',
+                ''
             ].join('\n');
         }
     });
@@ -34,9 +41,9 @@ module.exports = function (templateDirectory, outputFile, watch) {
         '\n',
         '// attach to windor or export with commonJS',
         'if (typeof exports !== "undefined") {',
-        '\tmodule.exports = exports;',
+        '    module.exports = exports;',
         '} else {',
-        '\troot.templatizer = exports;',
+        '    root.templatizer = exports;',
         '}',
         '',
         '})();'
