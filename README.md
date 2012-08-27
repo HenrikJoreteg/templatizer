@@ -13,8 +13,9 @@ From my tests it's 6 to 10 times faster than mustache.js with ICanHaz.
 
 ## How do I use it?
 
+1. `npm install templatizer`
 1. Write all your templates as individual jade files in a folder in your project.
-2. Somewhere in your build process do this:
+1. Somewhere in your build process do this:
     
 ```js
 var templatizer = require('templatizer');
