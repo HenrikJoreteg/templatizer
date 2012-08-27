@@ -8,6 +8,9 @@ Client-side templating is overly complicated, ultimately what you *actually* wan
 
 So, the question is, what's a sane way to get to that point? Enter [jade](http://jade-lang.com). Simple, intuitive templating, and happens to be what I use on the server anyway. So... Jade has some awesome stuff for compiling templates into functions. I just built templatizer to make it easy to turn a folder full of jade templates into a CommonJS module that exports all the template functions by whatever their file name.
 
+## Is it faster?
+From my tests it's 6 to 10 times faster than mustache.js with ICanHaz.
+
 ## How do I use it?
 
 1. Write all your templates as individual jade files in a folder in your project.
@@ -41,3 +44,9 @@ exports.app = function () {} // the function
 ```
 
 The awesome thing is... there are no external dependencies because they're just functions at this point. Crazy fast, SO MUCH WIN!!!!
+
+## License
+
+MIT
+
+If you think this is cool, you should follow me on twitter: [@HenrikJoreteg](http://twitter.com/henrikjoreteg)
