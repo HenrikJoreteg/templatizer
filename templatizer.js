@@ -10,12 +10,20 @@ function beautify(code) {
 module.exports = function (templateDirectory, outputFile, watch) {
     // first we want to add the runtime code we need
     // we var scope it so it doesn't create a global
-    var output = [
+    var jadeRuntime, output;
+
+    try {
+        jadeRuntime = fs.readFileSync(__dirname + '/../jade/runtime.min.js');
+    } catch (e) {
+        jadeRuntime = fs.readFileSync(__dirname + '/node_modules/jade/runtime.min.js');
+    }
+    
+    output = [
         '(function () {',
         'var root = this, exports = {};',
         '',
         '// The jade runtime:',
-        'var ' + fs.readFileSync(__dirname + '/node_modules/jade/runtime.min.js'),
+        'var ' + jadeRuntime,
         ''
     ].join('\n');
 
