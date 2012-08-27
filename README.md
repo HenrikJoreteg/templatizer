@@ -14,8 +14,15 @@ From my tests it's 6 to 10 times faster than mustache.js with ICanHaz.
 ## How do I use it?
 
 1. Write all your templates as individual jade files in a folder in your project.
-2. Run IDo
+2. Somewhere in your build process do this:
+    
+```js
+var templatizer = require('templatizer');
 
+// pass in the template directory and what you want to 
+// save the output file as. That's it!
+templatizer(__dirname + '/templates', __dirname + '/demo_output.js');
+```
 
 So a folder like this
 
