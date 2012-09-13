@@ -31,7 +31,8 @@ So a folder like this
 /clienttemplates
    user.jade
    app.jade
-   otherTemplate.jade
+   /myfolder
+     nestedTemplate.jade
 ```
 
 Complies down to a JS file that looks something like this:
@@ -48,10 +49,18 @@ exports.user = function () {}
 // built from the `app.jade` file
 exports.app = function () {} // the function 
 
+// folders become nested objects so 
+// myfolder/nestedTemplate.jade becomes
+exports.myfolder.nestedTemplate = function () {} // the template function
+
 // etc. etc
 ```
 
 The awesome thing is... there are no external dependencies because they're just functions at this point. Crazy fast, SO MUCH WIN!!!!
+
+## Sample?
+
+Check out the `demo_output.js` file for... err... demo output built from the `templates` directory in this project.
 
 ## License
 
