@@ -1,5 +1,8 @@
 var jade = require('jade'),
     uglifyjs = require('uglify-js'),
+    findit = require('findit'),
+    path = require('path'),
+    _ = require('underscore'),
     fs = require('fs');
 
 function beautify(code) {
@@ -10,13 +13,16 @@ function beautify(code) {
 module.exports = function (templateDirectory, outputFile, watch) {
     // first we want to add the runtime code we need
     // we var scope it so it doesn't create a global
-    var jadeRuntime, output;
+    var jadeRuntime, output, item, i, l, contents, folders = [], templates = [];
 
     try {
         jadeRuntime = fs.readFileSync(__dirname + '/../jade/runtime.min.js');
     } catch (e) {
         jadeRuntime = fs.readFileSync(__dirname + '/node_modules/jade/runtime.min.js');
     }
+    
+    contents = findit.sync(templateDirectory);
+
     
     output = [
         '(function () {',
@@ -27,27 +33,52 @@ module.exports = function (templateDirectory, outputFile, watch) {
         ''
     ].join('\n');
 
-    // loop through all our templates
-    fs.readdirSync(templateDirectory).forEach(function (file) {
-        var split = file.split('.'),
-            name = split[0],
-            ext = split[1],
-            template,
-            filename = templateDirectory + '/' + file;        
-        if (ext === 'jade') {
-            template = beautify(jade.compile(fs.readFileSync(filename), {client: true, compileDebug: false, pretty: true, filename: filename}).toString());
-            output += [
-                '',
-                '// ' + file + ' compiled:',
-                'exports.' + name + ' = ' + template + ';',
-                ''
-            ].join('\n');
+    for (i = 0, l = contents.length; i < l; i++) {
+        item = contents[i].replace(templateDirectory, '').slice(1);
+        if (path.extname(item) === '') {
+            folders.push(item);
+        } else if (path.extname(item) === '.jade') {
+            templates.push(item);
         }
+    }
+
+    folders = _.sortBy(folders, function (folder) {
+        var arr = folder.split(path.sep);
+        return arr.length;
+    });
+
+    output += '\n// create our folder objects';
+    folders.forEach(function (folder) {
+        var arr = folder.split(path.sep);
+        output += '\nexports.' + arr.join('.') + ' = {};';
+    });
+    output += '\n';
+
+    templates.forEach(function (file) {
+        var name = path.basename(file, '.jade'),
+            dirString = function () {
+                var dirname = path.dirname(file),
+                    arr = dirname.split(path.sep);
+                if (dirname === '.') return name;
+                arr.push(name);
+                return arr.join('.');
+            }(),
+            fullPath = templateDirectory + '/' + file,
+            template = beautify(jade.compile(fs.readFileSync(fullPath), {client: true, compileDebug: false, pretty: true, filename: fullPath}).toString());
+
+        console.log(dirString);
+
+        output += [
+            '',
+            '// ' + name + '.jade compiled template',
+            'exports.' + dirString + ' = ' + template + ';',
+            ''
+        ].join('\n');
     });
 
     output += [
         '\n',
-        '// attach to windor or export with commonJS',
+        '// attach to window or export with commonJS',
         'if (typeof exports !== "undefined") {',
         '    module.exports = exports;',
         '} else {',

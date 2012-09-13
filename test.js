@@ -10,5 +10,8 @@ console.log('2.'.grey + ' now reading in generated file');
 var templates = require('./demo_output');
 console.log('3.'.grey + ' rendering users.jade template to html:');
 console.log(templates.users({users: ['larry', 'curly', 'moe']}).green + '\n');
+console.log('4.'.grey + ' rendering a deeply nested template: otherfolder.deep2.deeptweet');
+console.log(templates.otherfolder.deep2.deeptweet({tweet: 'hello, templatizer!'}).green + '\n');
+
 
 console.log('templatizer.js'.bold + ' was with love by ' + yetify.logo() + ' for you!' + ' <3'.red + '\n');

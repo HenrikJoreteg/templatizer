@@ -1,11 +1,15 @@
 {
     "name": "templatizer",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "author": "Henrik Joreteg <henrik@andyet.net>",
     "description": "Simple solution for compiling jade templates into vanilla JS functions for blazin' fast client-side use.",
     "dependencies": {
         "jade": "",
-        "uglify-js": ""
+        "uglify-js": "",
+        "findit": "",
+        "underscore": "",
+        "colors": "",
+        "yetify": ""
     },
     "repository": {
         "type": "git",
