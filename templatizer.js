@@ -35,7 +35,7 @@ module.exports = function (templateDirectory, outputFile, watch) {
 
     for (i = 0, l = contents.length; i < l; i++) {
         item = contents[i].replace(templateDirectory, '').slice(1);
-        if (path.extname(item) === '') {
+        if (path.extname(item) === '' && item.charAt(0) !== '.') {
             folders.push(item);
         } else if (path.extname(item) === '.jade') {
             templates.push(item);
