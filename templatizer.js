@@ -66,8 +66,6 @@ module.exports = function (templateDirectory, outputFile, watch) {
             fullPath = templateDirectory + '/' + file,
             template = beautify(jade.compile(fs.readFileSync(fullPath), {client: true, compileDebug: false, pretty: true, filename: fullPath}).toString());
 
-        console.log(dirString);
-
         output += [
             '',
             '// ' + name + '.jade compiled template',
