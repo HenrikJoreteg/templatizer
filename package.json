@@ -1,6 +1,6 @@
 {
     "name": "templatizer",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "author": "Henrik Joreteg <henrik@andyet.net>",
     "description": "Simple solution for compiling jade templates into vanilla JS functions for blazin' fast client-side use.",
     "dependencies": {

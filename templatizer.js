@@ -77,7 +77,7 @@ module.exports = function (templateDirectory, outputFile, watch) {
     output += [
         '\n',
         '// attach to window or export with commonJS',
-        'if (typeof exports !== "undefined") {',
+        'if (typeof module !== "undefined") {',
         '    module.exports = exports;',
         '} else {',
         '    root.templatizer = exports;',
