@@ -32,7 +32,7 @@ module.exports = function (templateDirectory, outputFile, watch) {
         'var root = this, exports = {};',
         '',
         '// The jade runtime:',
-        'var ' + jadeRuntime,
+        jadeRuntime,
         ''
     ].join('\n');
 
