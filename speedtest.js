@@ -36,4 +36,4 @@ while (i--) {
 }
 console.timeEnd('icanhaz');
 
-console.log('\n\ntemplatizer.js'.bold + ' was with love by ' + yetify.logo() + ' for you!' + ' <3'.red + '\n');
+console.log('\n\ntemplatizer.js'.bold + ' was made with love by ' + yetify.logo() + ' for you!' + ' <3'.red + '\n');

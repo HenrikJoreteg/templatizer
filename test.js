@@ -14,4 +14,4 @@ console.log('4.'.grey + ' rendering a deeply nested template: otherfolder.deep2.
 console.log(templates.otherfolder.deep2.deeptweet({tweet: 'hello, templatizer!'}).green + '\n');
 
 
-console.log('templatizer.js'.bold + ' was with love by ' + yetify.logo() + ' for you!' + ' <3'.red + '\n');
+console.log('templatizer.js'.bold + ' was made with love by ' + yetify.logo() + ' for you!' + ' <3'.red + '\n');
