@@ -15,6 +15,9 @@ module.exports = function (templateDirectory, outputFile, watch) {
     // we var scope it so it doesn't create a global
     var jadeRuntime, output, item, i, l, contents, folders = [], templates = [];
 
+    var isWindows = process.platform === 'win32';
+    var pathSep = path.sep || ( isWindows ? '\\' : '/' );
+
     try {
         jadeRuntime = fs.readFileSync(__dirname + '/../jade/runtime.min.js');
     } catch (e) {
@@ -43,13 +46,13 @@ module.exports = function (templateDirectory, outputFile, watch) {
     }
 
     folders = _.sortBy(folders, function (folder) {
-        var arr = folder.split(path.sep);
+        var arr = folder.split(pathSep);
         return arr.length;
     });
 
     output += '\n// create our folder objects';
     folders.forEach(function (folder) {
-        var arr = folder.split(path.sep);
+        var arr = folder.split(pathSep);
         output += '\nexports.' + arr.join('.') + ' = {};';
     });
     output += '\n';
@@ -58,7 +61,7 @@ module.exports = function (templateDirectory, outputFile, watch) {
         var name = path.basename(file, '.jade'),
             dirString = function () {
                 var dirname = path.dirname(file),
-                    arr = dirname.split(path.sep);
+                    arr = dirname.split(pathSep);
                 if (dirname === '.') return name;
                 arr.push(name);
                 return arr.join('.');
