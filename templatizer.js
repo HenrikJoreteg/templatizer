@@ -16,7 +16,7 @@ module.exports = function (templateDirectory, outputFile, watch) {
     var jadeRuntime, output, item, i, l, contents, folders = [], templates = [];
 
     var isWindows = process.platform === 'win32';
-    var pathSep = path.sep || ( isWindows ? '\\' : '/' );
+    var pathSep = path.sep || (isWindows ? '\\' : '/');
 
     try {
         jadeRuntime = fs.readFileSync(__dirname + '/../jade/runtime.min.js');

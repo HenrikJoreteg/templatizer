@@ -121,6 +121,8 @@ exports.otherfolder.deepnested.deeptweet = function anonymous(locals, attrs, esc
 // attach to window or export with commonJS
 if (typeof module !== "undefined") {
     module.exports = exports;
+} else if (typeof define === "function" && define.amd) {
+    define(exports);
 } else {
     root.templatizer = exports;
 }
