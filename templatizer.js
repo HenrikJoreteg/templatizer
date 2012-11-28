@@ -6,8 +6,7 @@ var jade = require('jade'),
     fs = require('fs');
 
 function beautify(code) {
-    var ast = uglifyjs.parser.parse(code);
-    return uglifyjs.uglify.gen_code(ast, {beautify: true});
+    return uglifyjs.parse(code).print_to_string({beautify: true});
 }
 
 module.exports = function (templateDirectory, outputFile, watch) {
