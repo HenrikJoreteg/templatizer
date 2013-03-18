@@ -22,10 +22,10 @@ module.exports = function (templateDirectory, outputFile, watch) {
     } catch (e) {
         jadeRuntime = fs.readFileSync(__dirname + '/node_modules/jade/runtime.min.js');
     }
-    
+
     contents = findit.sync(templateDirectory);
 
-    
+
     output = [
         '(function () {',
         'var root = this, exports = {};',
@@ -66,7 +66,7 @@ module.exports = function (templateDirectory, outputFile, watch) {
                 return arr.join('.');
             }(),
             fullPath = templateDirectory + '/' + file,
-            template = beautify(jade.compile(fs.readFileSync(fullPath), {client: true, compileDebug: false, pretty: true, filename: fullPath}).toString());
+            template = beautify(jade.compile(fs.readFileSync(fullPath), {client: true, compileDebug: false, pretty: false, filename: fullPath}).toString());
 
         output += [
             '',

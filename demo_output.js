@@ -19,13 +19,12 @@ exports.users = function anonymous(locals, attrs, escape, rethrow, merge) {
     var buf = [];
     with (locals || {}) {
         var interp;
-        var __indent = [];
-        buf.push('\n<ul class="users">');
+        buf.push('<ul class="users">');
         (function() {
             if ("number" == typeof users.length) {
                 for (var $index = 0, $$l = users.length; $index < $$l; $index++) {
                     var user = users[$index];
-                    buf.push("\n  <li>");
+                    buf.push("<li>");
                     var __val__ = user;
                     buf.push(escape(null == __val__ ? "" : __val__));
                     buf.push("</li>");
@@ -33,14 +32,14 @@ exports.users = function anonymous(locals, attrs, escape, rethrow, merge) {
             } else {
                 for (var $index in users) {
                     var user = users[$index];
-                    buf.push("\n  <li>");
+                    buf.push("<li>");
                     var __val__ = user;
                     buf.push(escape(null == __val__ ? "" : __val__));
                     buf.push("</li>");
                 }
             }
         }).call(this);
-        buf.push("\n</ul>");
+        buf.push("</ul>");
     }
     return buf.join("");
 };
@@ -54,8 +53,7 @@ exports.nested.tweet = function anonymous(locals, attrs, escape, rethrow, merge)
     var buf = [];
     with (locals || {}) {
         var interp;
-        var __indent = [];
-        buf.push('\n<li class="tweet">');
+        buf.push('<li class="tweet">');
         var __val__ = user;
         buf.push(escape(null == __val__ ? "" : __val__));
         buf.push("</li>");
@@ -72,8 +70,7 @@ exports.otherfolder.othertweet = function anonymous(locals, attrs, escape, rethr
     var buf = [];
     with (locals || {}) {
         var interp;
-        var __indent = [];
-        buf.push('\n<li class="tweet">');
+        buf.push('<li class="tweet">');
         var __val__ = user;
         buf.push(escape(null == __val__ ? "" : __val__));
         buf.push("</li>");
@@ -90,8 +87,7 @@ exports.otherfolder.deep2.deeptweet = function anonymous(locals, attrs, escape, 
     var buf = [];
     with (locals || {}) {
         var interp;
-        var __indent = [];
-        buf.push('\n<li class="tweet">');
+        buf.push('<li class="tweet">');
         var __val__ = tweet;
         buf.push(escape(null == __val__ ? "" : __val__));
         buf.push("</li>");
@@ -108,8 +104,7 @@ exports.otherfolder.deepnested.deeptweet = function anonymous(locals, attrs, esc
     var buf = [];
     with (locals || {}) {
         var interp;
-        var __indent = [];
-        buf.push('\n<li class="tweet">');
+        buf.push('<li class="tweet">');
         var __val__ = tweet;
         buf.push(escape(null == __val__ ? "" : __val__));
         buf.push("</li>");
