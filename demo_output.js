@@ -30,7 +30,9 @@ exports.users = function anonymous(locals, attrs, escape, rethrow, merge) {
                     buf.push("</li>");
                 }
             } else {
+                var $$l = 0;
                 for (var $index in users) {
+                    $$l++;
                     var user = users[$index];
                     buf.push("<li>");
                     var __val__ = user;
