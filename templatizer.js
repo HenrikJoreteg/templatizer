@@ -10,39 +10,34 @@ function beautify(code) {
 }
 
 module.exports = function (templateDirectory, outputFile, watch) {
-    // first we want to add the runtime code we need
-    // we var scope it so it doesn't create a global
-    var jadeRuntime, output, item, i, l, contents, folders = [], templates = [];
+    var folders = [],
+        templates = [],
+        isWindows = process.platform === 'win32',
+        pathSep = path.sep || (isWindows ? '\\' : '/'),
+        placesToLook = [
+            __dirname + '/../jade/runtime.min.js',
+            __dirname + '/node_modules/jade/runtime.min.js',
+            __dirname + '/jaderuntime.min.js'
+        ],
+        contents = findit.sync(templateDirectory),
+        jadeRuntime = fs.readFileSync(_.find(placesToLook, fs.existsSync)).toString(),
+        output = [
+            '(function () {',
+            'var root = this, exports = {};',
+            '',
+            '// The jade runtime:',
+            'var ' + jadeRuntime,
+            ''
+        ].join('\n');
 
-    var isWindows = process.platform === 'win32';
-    var pathSep = path.sep || (isWindows ? '\\' : '/');
-
-    try {
-        jadeRuntime = fs.readFileSync(__dirname + '/../jade/runtime.min.js');
-    } catch (e) {
-        jadeRuntime = fs.readFileSync(__dirname + '/node_modules/jade/runtime.min.js');
-    }
-
-    contents = findit.sync(templateDirectory);
-
-
-    output = [
-        '(function () {',
-        'var root = this, exports = {};',
-        '',
-        '// The jade runtime:',
-        'var ' + jadeRuntime,
-        ''
-    ].join('\n');
-
-    for (i = 0, l = contents.length; i < l; i++) {
-        item = contents[i].replace(templateDirectory, '').slice(1);
+    contents.forEach(function (file) {
+        item = file.replace(templateDirectory, '').slice(1);
         if (path.extname(item) === '' && item.charAt(0) !== '.') {
             folders.push(item);
         } else if (path.extname(item) === '.jade') {
             templates.push(item);
         }
-    }
+    });
 
     folders = _.sortBy(folders, function (folder) {
         var arr = folder.split(pathSep);
