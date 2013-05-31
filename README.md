@@ -66,4 +66,8 @@ Check out the `demo_output.js` file for... err... demo output built from the `te
 
 MIT
 
+## Contributors
+
+Aaron McCall [github profile](https://github.com/aaronmccall)
+
 If you think this is cool, you should follow me on twitter: [@HenrikJoreteg](http://twitter.com/henrikjoreteg)
