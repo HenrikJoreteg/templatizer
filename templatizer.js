@@ -1,6 +1,6 @@
 var jade = require('jade'),
     uglifyjs = require('uglify-js'),
-    findit = require('findit'),
+    walkdir = require('walkdir'),
     path = require('path'),
     _ = require('underscore'),
     fs = require('fs');
@@ -19,7 +19,7 @@ module.exports = function (templateDirectory, outputFile, watch) {
             __dirname + '/node_modules/jade/runtime.min.js',
             __dirname + '/jaderuntime.min.js'
         ],
-        contents = findit.sync(templateDirectory),
+        contents = walkdir.sync(templateDirectory),
         jadeRuntime = fs.readFileSync(_.find(placesToLook, fs.existsSync)).toString(),
         output = [
             '(function () {',
