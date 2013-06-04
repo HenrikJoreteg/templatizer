@@ -10,106 +10,66 @@ exports.otherfolder = {};
 exports.otherfolder.deep2 = {};
 exports.otherfolder.deepnested = {};
 
-// users.jade compiled template
-exports.users = function anonymous(locals, attrs, escape, rethrow, merge) {
-    attrs = attrs || jade.attrs;
-    escape = escape || jade.escape;
-    rethrow = rethrow || jade.rethrow;
-    merge = merge || jade.merge;
+// tweet.jade compiled template
+exports.nested.tweet = function anonymous(locals) {
     var buf = [];
     with (locals || {}) {
-        var interp;
-        buf.push('<ul class="users">');
-        (function() {
-            if ("number" == typeof users.length) {
-                for (var $index = 0, $$l = users.length; $index < $$l; $index++) {
-                    var user = users[$index];
-                    buf.push("<li>");
-                    var __val__ = user;
-                    buf.push(escape(null == __val__ ? "" : __val__));
-                    buf.push("</li>");
-                }
-            } else {
-                var $$l = 0;
-                for (var $index in users) {
-                    $$l++;
-                    var user = users[$index];
-                    buf.push("<li>");
-                    var __val__ = user;
-                    buf.push(escape(null == __val__ ? "" : __val__));
-                    buf.push("</li>");
-                }
-            }
-        }).call(this);
-        buf.push("</ul>");
+        buf.push('<li class="tweet">' + jade.escape(null == (jade.interp = user) ? "" : jade.interp) + "</li>");
     }
     return buf.join("");
 };
 
-// tweet.jade compiled template
-exports.nested.tweet = function anonymous(locals, attrs, escape, rethrow, merge) {
-    attrs = attrs || jade.attrs;
-    escape = escape || jade.escape;
-    rethrow = rethrow || jade.rethrow;
-    merge = merge || jade.merge;
+// deeptweet.jade compiled template
+exports.otherfolder.deep2.deeptweet = function anonymous(locals) {
     var buf = [];
     with (locals || {}) {
-        var interp;
-        buf.push('<li class="tweet">');
-        var __val__ = user;
-        buf.push(escape(null == __val__ ? "" : __val__));
-        buf.push("</li>");
+        buf.push('<li class="tweet">' + jade.escape(null == (jade.interp = tweet) ? "" : jade.interp) + "</li>");
+    }
+    return buf.join("");
+};
+
+// deeptweet.jade compiled template
+exports.otherfolder.deepnested.deeptweet = function anonymous(locals) {
+    var buf = [];
+    with (locals || {}) {
+        buf.push('<li class="tweet">' + jade.escape(null == (jade.interp = tweet) ? "" : jade.interp) + "</li>");
     }
     return buf.join("");
 };
 
 // othertweet.jade compiled template
-exports.otherfolder.othertweet = function anonymous(locals, attrs, escape, rethrow, merge) {
-    attrs = attrs || jade.attrs;
-    escape = escape || jade.escape;
-    rethrow = rethrow || jade.rethrow;
-    merge = merge || jade.merge;
+exports.otherfolder.othertweet = function anonymous(locals) {
     var buf = [];
     with (locals || {}) {
-        var interp;
-        buf.push('<li class="tweet">');
-        var __val__ = user;
-        buf.push(escape(null == __val__ ? "" : __val__));
-        buf.push("</li>");
+        buf.push('<li class="tweet">' + jade.escape(null == (jade.interp = user) ? "" : jade.interp) + "</li>");
     }
     return buf.join("");
 };
 
-// deeptweet.jade compiled template
-exports.otherfolder.deep2.deeptweet = function anonymous(locals, attrs, escape, rethrow, merge) {
-    attrs = attrs || jade.attrs;
-    escape = escape || jade.escape;
-    rethrow = rethrow || jade.rethrow;
-    merge = merge || jade.merge;
+// users.jade compiled template
+exports.users = function anonymous(locals) {
     var buf = [];
     with (locals || {}) {
-        var interp;
-        buf.push('<li class="tweet">');
-        var __val__ = tweet;
-        buf.push(escape(null == __val__ ? "" : __val__));
-        buf.push("</li>");
-    }
-    return buf.join("");
-};
-
-// deeptweet.jade compiled template
-exports.otherfolder.deepnested.deeptweet = function anonymous(locals, attrs, escape, rethrow, merge) {
-    attrs = attrs || jade.attrs;
-    escape = escape || jade.escape;
-    rethrow = rethrow || jade.rethrow;
-    merge = merge || jade.merge;
-    var buf = [];
-    with (locals || {}) {
-        var interp;
-        buf.push('<li class="tweet">');
-        var __val__ = tweet;
-        buf.push(escape(null == __val__ ? "" : __val__));
-        buf.push("</li>");
+        buf.push('<ul class="users">');
+        (function() {
+            var $$obj = users;
+            if ("number" == typeof $$obj.length) {
+                for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
+                    var user = $$obj[$index];
+                    buf.push("<li>" + jade.escape(null == (jade.interp = user) ? "" : jade.interp) + "</li>");
+                }
+            } else {
+                var $$l = 0;
+                for (var $index in $$obj) {
+                    $$l++;
+                    if ($$obj.hasOwnProperty($index)) {
+                        var user = $$obj[$index];
+                        buf.push("<li>" + jade.escape(null == (jade.interp = user) ? "" : jade.interp) + "</li>");
+                    }
+                }
+            }
+        }).call(this);
+        buf.push("</ul>");
     }
     return buf.join("");
 };
