@@ -9,9 +9,12 @@ function beautify(code) {
     return uglifyjs.parse(code).print_to_string({beautify: true});
 }
 
-module.exports = function (templateDirectory, outputFile, watch) {
+module.exports = function (templateDirectory, outputFile, options) {
     var folders = [],
         templates = [],
+        options = _.defaults(options, {
+            beautify: true
+        }),
         isWindows = process.platform === 'win32',
         pathSep = path.sep || (isWindows ? '\\' : '/'),
         placesToLook = [
@@ -61,8 +64,9 @@ module.exports = function (templateDirectory, outputFile, watch) {
                 return arr.join('.');
             }(),
             fullPath = templateDirectory + '/' + file,
-            template = beautify(jade.compile(fs.readFileSync(fullPath), {client: true, compileDebug: false, pretty: false, filename: fullPath}).toString());
+            template = jade.compile(fs.readFileSync(fullPath), {client: true, compileDebug: false, pretty: false, filename: fullPath}).toString();
 
+        if (options.beautify) template = beautify(template);
         output += [
             '',
             '// ' + name + '.jade compiled template',
