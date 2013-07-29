@@ -1,7 +1,13 @@
 {
     "name": "templatizer",
-    "version": "0.0.12",
+    "version": "0.1.0",
     "author": "Henrik Joreteg <henrik@andyet.net>",
+    "contributors": [ 
+        {
+            "name": "Beau Sorensen",
+            "email": "mail@beausorensen.com"
+        } 
+    ],
     "description": "Simple solution for compiling jade templates into vanilla JS functions for blazin' fast client-side use.",
     "dependencies": {
         "jade": "0.30.x",
@@ -15,6 +21,10 @@
         "type": "git",
         "url": "https://github.com/HenrikJoreteg/templatizer.git"
     },
-    "keywords": ["templates", "browser", "jade"],
+    "keywords": [
+        "templates", 
+        "browser", 
+        "jade"
+    ],
     "main": "templatizer.js"
 }
