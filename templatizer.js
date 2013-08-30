@@ -1,34 +1,35 @@
-var jade = require('jade'),
-    uglifyjs = require('uglify-js'),
-    walkdir = require('walkdir'),
-    path = require('path'),
-    _ = require('underscore'),
-    fs = require('fs');
+var jade = require('jade');
+var uglifyjs = require('uglify-js');
+var walkdir = require('walkdir');
+var path = require('path');
+var _ = require('underscore');
+var fs = require('fs');
+
 
 function beautify(code) {
     return uglifyjs.parse(code).print_to_string({beautify: true});
 }
 
-module.exports = function (templateDirectory, outputFile, watch) {
-    var folders = [],
-        templates = [],
-        isWindows = process.platform === 'win32',
-        pathSep = path.sep || (isWindows ? '\\' : '/'),
-        placesToLook = [
+module.exports = function (templateDirectory, outputFile) {
+    var folders = [];
+    var templates = [];
+    var isWindows = process.platform === 'win32';
+    var pathSep = path.sep || (isWindows ? '\\' : '/');
+    var placesToLook = [
             __dirname + '/../jade/runtime.min.js',
             __dirname + '/node_modules/jade/runtime.min.js',
             __dirname + '/jaderuntime.min.js'
-        ],
-        contents = walkdir.sync(templateDirectory),
-        jadeRuntime = fs.readFileSync(_.find(placesToLook, fs.existsSync)).toString(),
-        output = [
-            '(function () {',
-            'var root = this, exports = {};',
-            '',
-            '// The jade runtime:',
-            'var jade = exports.' + jadeRuntime,
-            ''
-        ].join('\n');
+        ];
+    var contents = walkdir.sync(templateDirectory);
+    var jadeRuntime = fs.readFileSync(_.find(placesToLook, fs.existsSync)).toString();
+    var output = [
+        '(function () {',
+        'var root = this, exports = {};',
+        '',
+        '// The jade runtime:',
+        'var jade = exports.' + jadeRuntime,
+        ''
+    ].join('\n');
 
     contents.forEach(function (file) {
         var item = file.replace(templateDirectory, '').slice(1);
@@ -52,16 +53,21 @@ module.exports = function (templateDirectory, outputFile, watch) {
     output += '\n';
 
     templates.forEach(function (file) {
-        var name = path.basename(file, '.jade'),
-            dirString = function () {
-                var dirname = path.dirname(file),
-                    arr = dirname.split(pathSep);
-                if (dirname === '.') return name;
-                arr.push(name);
-                return arr.join('.');
-            }(),
-            fullPath = templateDirectory + '/' + file,
-            template = beautify(jade.compile(fs.readFileSync(fullPath), {client: true, compileDebug: false, pretty: false, filename: fullPath}).toString());
+        var name = path.basename(file, '.jade');
+        var dirString = function () {
+            var dirname = path.dirname(file);
+            var arr = dirname.split(pathSep);
+            if (dirname === '.') return name;
+            arr.push(name);
+            return arr.join('.');
+        }();
+        var fullPath = templateDirectory + '/' + file;
+        var template = beautify(jade.compile(fs.readFileSync(fullPath), {
+            client: true,
+            compileDebug: false,
+            pretty: false,
+            filename: fullPath
+        }).toString());
 
         output += [
             '',

@@ -1,9 +1,9 @@
-var templatizer = require('./templatizer'),
-    colors = require('colors'),
-    yetify = require('yetify');
+var templatizer = require('./templatizer');
+var colors = require('colors');
+var yetify = require('yetify');
 
 // build our demo file
-templatizer(__dirname + '/templates', __dirname + '/demo_output.js');
+templatizer(__dirname + '/templates', __dirname + '/demo_output.js', {beautify: false});
 console.log('\nTemplatizer Demo'.bold);
 console.log('1.'.grey + ' built: demo_output.js');
 console.log('2.'.grey + ' now reading in generated file');
