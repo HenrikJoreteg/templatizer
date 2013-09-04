@@ -21,17 +21,32 @@
                 }]
             };
             $(function () {
-                $('div').html(templatizer.users(data));
+                var $u = $('.users-container');
+                var $uc = $('.nested-users-container');
+
+                $u.html(templatizer.users(data));
+                $uc.html(templatizer.nested.users(data));
 
                 $('button').click(function () {
 
-                    $('div').find('[data-user-id=1]').replaceWith(templatizer.users.user_li({
+                    $u.find('[data-user-id=1]').replaceWith(templatizer.users.user_li({
                         name: 'larry 2',
                         url: 'http://google.com',
                         id: 10
                     }));
 
-                    $('div').find('[data-user-id=2]').html(templatizer.users.user_a({
+                    $u.find('[data-user-id=2]').html(templatizer.users.user_a({
+                        name: 'curly 2',
+                        url: 'http://google.com'
+                    }));
+
+                    $uc.find('[data-user-id=1]').replaceWith(templatizer.nested.users.user_li({
+                        name: 'larry 2',
+                        url: 'http://google.com',
+                        id: 10
+                    }));
+
+                    $uc.find('[data-user-id=2]').html(templatizer.nested.users.user_a({
                         name: 'curly 2',
                         url: 'http://google.com'
                     }));
@@ -42,6 +57,9 @@
     </head>
     <body>
         <button>Change users</button>
-        <div></div>
+        <h3>users.jade</h3>
+        <div class="users-container"></div>
+        <h3>nested.users.jade</h3>
+        <div class="nested-users-container"></div>
     </body>
 </html>
