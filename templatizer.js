@@ -1,4 +1,6 @@
 var jade = require('jade');
+var esprima = require('esprima');
+var escodegen = require('escodegen');
 var uglifyjs = require('uglify-js');
 var walkdir = require('walkdir');
 var path = require('path');
@@ -68,13 +70,125 @@ module.exports = function (templateDirectory, outputFile) {
             pretty: false,
             filename: fullPath
         }).toString());
+        var ast = esprima.parse(template).body[0].body.body;
+        var mixinOutput = '';
+
+        ast.forEach(function (tree) {
+            var type = tree.type,
+                declarationName = tree.declarations && tree.declarations[0].id.name,
+                statements = [],
+                fnTree = {},
+                generatedMixinFn = '';
+
+            if (type === 'VariableDeclaration' && /_mixin$/.test(declarationName)) {
+                // Get mixin function from variable declaration
+                fnTree = tree.declarations[0].init;
+
+                // Change to an anonymous function to be assigned later
+                fnTree.type = 'FunctionDeclaration';
+                fnTree.id = {
+                    type: 'Identifier',
+                    name: 'anonymous'
+                };
+                statements = fnTree.body.body;
+
+                // Replace calls to other mixins within the file
+                statements.forEach(function (statement, i) {
+                    var sType = statement.type,
+                        sExpr = statement.expression,
+                        sExprType = sExpr && sExpr.type,
+                        sCallee = sExpr && sExpr.callee,
+                        sArgs = sExpr && sExpr.arguments,
+                        sCalleeName = sCallee && sCallee.name;
+
+                    if (sType === 'ExpressionStatement' && sExprType === 'CallExpression' && /_mixin$/.test(sCalleeName)) {
+                        statements[i].expression.callee = {
+                            type: 'MemberExpression',
+                            computed: false,
+                            object: {
+                                type: 'Identifier',
+                                name: 'buf'
+                            },
+                            property: {
+                                type: 'Identifier',
+                                name: 'push'
+                            }
+                        };
+                        statements[i].expression.arguments = [{
+                            type: 'CallExpression',
+                            callee: {
+                                type: 'MemberExpression',
+                                computed: false,
+                                object: {
+                                    type: 'ThisExpression'
+                                },
+                                property: {
+                                    type: 'Identifier',
+                                    name: sCalleeName.replace('_mixin', '')
+                                }
+                            },
+                            arguments: sArgs
+                        }];
+                    }
+
+                });
+                
+                // Add a variable declaration and return statement for the buffer
+                // since its no longer supplied by jade
+                statements[0].declarations.push({
+                    type: 'VariableDeclarator',
+                    id: {
+                        type: 'Identifier',
+                        name: 'buf'
+                    },
+                    init: {
+                        type: 'ArrayExpression',
+                        elements: []
+                    }
+                });
+                statements.push({
+                    type: 'ReturnStatement',
+                    argument: {
+                        type: 'CallExpression',
+                        callee: {
+                            type: 'MemberExpression',
+                            computed: false,
+                            object: {
+                                type: 'Identifier',
+                                name: 'buf'
+                            },
+                            property: {
+                                type: 'Identifier',
+                                name: 'join'
+                            }
+                        },
+                        arguments: [
+                            {
+                                type: 'Literal',
+                                value: '',
+                                raw: '""'
+                            }
+                        ]
+                    }
+                });
+
+                // Generate fn and store until it can be added to output after main fn
+                generatedMixinFn = beautify(escodegen.generate(fnTree));
+                mixinOutput += [
+                    '',
+                    '// ' + name + '.jade:' + declarationName + ' compiled template',
+                    'exports.' + dirString + '.' + declarationName.replace('_mixin', '') + ' = ' + generatedMixinFn + ';',
+                    ''
+                ].join('\n');
+            }
+        });
 
         output += [
             '',
             '// ' + name + '.jade compiled template',
             'exports.' + dirString + ' = ' + template + ';',
             ''
-        ].join('\n');
+        ].join('\n') + mixinOutput;
     });
 
     output += [
