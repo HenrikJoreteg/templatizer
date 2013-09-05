@@ -15,9 +15,7 @@
         "walkdir": "0.0.7",
         "underscore": "1.5.1",
         "colors": "0.6.x",
-        "yetify": "0.0.1"
-    },
-    "devDependencies": {
+        "yetify": "0.0.1",
         "esprima": "1.0.4",
         "escodegen": "0.0.26"
     },
