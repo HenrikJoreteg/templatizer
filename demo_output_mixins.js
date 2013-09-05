@@ -38,7 +38,7 @@ exports.otherfolder.othertweet = function anonymous(locals) {
 exports.users = function anonymous(locals) {
     var buf = [];
     var locals_ = locals || {}, users = locals_.users;
-    buf.push('<ul class="users">');
+    buf.push("<ul>");
     (function() {
         var $$obj = users;
         if ("number" == typeof $$obj.length) {
@@ -63,7 +63,7 @@ exports.users = function anonymous(locals) {
 exports.usersMixins = function anonymous(locals) {
     var buf = [];
     var locals_ = locals || {}, users = locals_.users;
-    buf.push('<ul class="users">');
+    buf.push("<ul>");
     (function() {
         var $$obj = users;
         if ("number" == typeof $$obj.length) {
@@ -112,7 +112,7 @@ exports.usersMixins.user_a = function anonymous(user) {
 exports.userscomplex = function anonymous(locals) {
     var buf = [];
     var locals_ = locals || {}, users = locals_.users;
-    buf.push('<ul class="users">');
+    buf.push("<ul>");
     (function() {
         var $$obj = users;
         if ("number" == typeof $$obj.length) {

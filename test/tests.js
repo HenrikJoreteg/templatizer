@@ -21,15 +21,18 @@ var outerHTML = function ($el) {
 };
 
 test("Test mixins", function () {
-    var $users = $(templatizer.users({users: data.users}));
-    var $user1 = $users.find('li').eq(0);
-    var user_li = templatizer.users.user_li(data.users[0]);
-    var user_a = templatizer.users.user_a(data.users[0]);
+    var users = templatizer.usersMixins({users: data.users});
+    var user_li = templatizer.usersMixins.user_li(data.users[0]);
+    var user_a = templatizer.usersMixins.user_a(data.users[0]);
+    
+    var _users = '<ul>';
+    for (var i = 0, m = data.users.length; i < m; i++) {
+        _users += templatizer.usersMixins.user_li(data.users[i]);
+    }
+    _users += '</ul>';
 
-    console.log(outerHTML($user1))
-    console.log(user_li)
-    console.log(outerHTML($user1) == user_li)
-
-    ok($user1.html() === user_a, "Passed!");
-    ok(outerHTML($user1) === user_li, "Passed!");
+    ok(users === _users);
+    ok(users.indexOf(user_li) > -1);
+    ok(users.indexOf(user_a) > -1);
+    ok(user_li.indexOf(user_a) > -1);
 });
