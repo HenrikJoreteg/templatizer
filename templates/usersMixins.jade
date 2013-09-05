@@ -1,10 +1,10 @@
 mixin user_li(user)
     li(data-user-id=user.id)
-        span Before the li
+        span Before
         mixin user_a(user)
 
 mixin user_a(user)
-    a(href=user.url) Nested #{user.name}
+    a(href=user.url) Within #{user.name}
 
 ul.users
     each user in users

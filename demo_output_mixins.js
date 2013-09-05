@@ -6,71 +6,31 @@ var jade = exports.jade=function(exports){Array.isArray||(Array.isArray=function
 
 
 // create our folder objects
-exports.nested = {};
-exports.other = {};
-exports.other.deep = {};
-exports.other.deep2 = {};
+exports.otherfolder = {};
+exports.otherfolder.deep2 = {};
+exports.otherfolder.deepnested = {};
 
-// users.jade compiled template
-exports.nested.users = function anonymous(locals) {
+// deeptweet.jade compiled template
+exports.otherfolder.deep2.deeptweet = function anonymous(locals) {
     var buf = [];
-    var locals_ = locals || {}, users = locals_.users;
-    buf.push('<ul class="users">');
-    (function() {
-        var $$obj = users;
-        if ("number" == typeof $$obj.length) {
-            for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
-                var user = $$obj[$index];
-                buf.push(this.users.user_li(user));
-            }
-        } else {
-            var $$l = 0;
-            for (var $index in $$obj) {
-                $$l++;
-                var user = $$obj[$index];
-                buf.push(this.users.user_li(user));
-            }
-        }
-    }).call(this);
-    buf.push("</ul>");
+    var locals_ = locals || {}, tweet = locals_.tweet;
+    buf.push('<li class="tweet">' + jade.escape(null == (jade.interp = tweet) ? "" : jade.interp) + "</li>");
     return buf.join("");
 };
 
-// users.jade:user_li_mixin compiled template
-exports.nested.users.user_li = function anonymous(user) {
-    var block = this.block, attributes = this.attributes || {}, escaped = this.escaped || {}, buf = [];
-    buf.push("<li" + jade.attrs({
-        "data-user-id": user.id
-    }, {
-        "data-user-id": true
-    }) + "><span>Before the li</span>");
-    buf.push(this.user_a(user));
-    buf.push("</li>");
-    return buf.join("");
-};
-
-// users.jade:user_a_mixin compiled template
-exports.nested.users.user_a = function anonymous(user) {
-    var block = this.block, attributes = this.attributes || {}, escaped = this.escaped || {}, buf = [];
-    buf.push("<a" + jade.attrs({
-        href: user.url
-    }, {
-        href: true
-    }) + ">Nested " + jade.escape((jade.interp = user.name) == null ? "" : jade.interp) + "</a>");
-    return buf.join("");
-};
-
-// test.jade compiled template
-exports.other.deep.test = function anonymous(locals) {
+// deeptweet.jade compiled template
+exports.otherfolder.deepnested.deeptweet = function anonymous(locals) {
     var buf = [];
-    buf.push('<div class="test"></div>');
+    var locals_ = locals || {}, tweet = locals_.tweet;
+    buf.push('<li class="tweet">' + jade.escape(null == (jade.interp = tweet) ? "" : jade.interp) + "</li>");
     return buf.join("");
 };
 
-// test.jade compiled template
-exports.other.deep2.test = function anonymous(locals) {
+// othertweet.jade compiled template
+exports.otherfolder.othertweet = function anonymous(locals) {
     var buf = [];
-    buf.push('<div class="test2"></div>');
+    var locals_ = locals || {}, user = locals_.user;
+    buf.push('<li class="tweet">' + jade.escape(null == (jade.interp = user) ? "" : jade.interp) + "</li>");
     return buf.join("");
 };
 
@@ -84,14 +44,14 @@ exports.users = function anonymous(locals) {
         if ("number" == typeof $$obj.length) {
             for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
                 var user = $$obj[$index];
-                buf.push(this.users.user_li(user));
+                buf.push("<li>" + jade.escape(null == (jade.interp = user) ? "" : jade.interp) + "</li>");
             }
         } else {
             var $$l = 0;
             for (var $index in $$obj) {
                 $$l++;
                 var user = $$obj[$index];
-                buf.push(this.users.user_li(user));
+                buf.push("<li>" + jade.escape(null == (jade.interp = user) ? "" : jade.interp) + "</li>");
             }
         }
     }).call(this);
@@ -99,27 +59,93 @@ exports.users = function anonymous(locals) {
     return buf.join("");
 };
 
-// users.jade:user_li_mixin compiled template
-exports.users.user_li = function anonymous(user) {
+// usersMixins.jade compiled template
+exports.usersMixins = function anonymous(locals) {
+    var buf = [];
+    var locals_ = locals || {}, users = locals_.users;
+    buf.push('<ul class="users">');
+    (function() {
+        var $$obj = users;
+        if ("number" == typeof $$obj.length) {
+            for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
+                var user = $$obj[$index];
+                buf.push(this.usersMixins.user_li(user));
+            }
+        } else {
+            var $$l = 0;
+            for (var $index in $$obj) {
+                $$l++;
+                var user = $$obj[$index];
+                buf.push(this.usersMixins.user_li(user));
+            }
+        }
+    }).call(this);
+    buf.push("</ul>");
+    return buf.join("");
+};
+
+// usersMixins.jade:user_li_mixin compiled template
+exports.usersMixins.user_li = function anonymous(user) {
     var block = this.block, attributes = this.attributes || {}, escaped = this.escaped || {}, buf = [];
     buf.push("<li" + jade.attrs({
         "data-user-id": user.id
     }, {
         "data-user-id": true
-    }) + ">");
+    }) + "><span>Before</span>");
     buf.push(this.user_a(user));
     buf.push("</li>");
     return buf.join("");
 };
 
-// users.jade:user_a_mixin compiled template
-exports.users.user_a = function anonymous(user) {
+// usersMixins.jade:user_a_mixin compiled template
+exports.usersMixins.user_a = function anonymous(user) {
     var block = this.block, attributes = this.attributes || {}, escaped = this.escaped || {}, buf = [];
     buf.push("<a" + jade.attrs({
         href: user.url
     }, {
         href: true
-    }) + ">" + jade.escape((jade.interp = user.name) == null ? "" : jade.interp) + "</a>");
+    }) + ">Within " + jade.escape((jade.interp = user.name) == null ? "" : jade.interp) + "</a>");
+    return buf.join("");
+};
+
+// userscomplex.jade compiled template
+exports.userscomplex = function anonymous(locals) {
+    var buf = [];
+    var locals_ = locals || {}, users = locals_.users;
+    buf.push('<ul class="users">');
+    (function() {
+        var $$obj = users;
+        if ("number" == typeof $$obj.length) {
+            for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
+                var user = $$obj[$index];
+                buf.push("<li" + jade.attrs({
+                    "data-user-id": user.id
+                }, {
+                    "data-user-id": true
+                }) + "><span>Before</span><a" + jade.attrs({
+                    href: user.url
+                }, {
+                    href: true
+                }) + ">Within " + jade.escape((jade.interp = user.name) == null ? "" : jade.interp) + "</a></li>");
+            }
+        } else {
+            var $$l = 0;
+            for (var $index in $$obj) {
+                $$l++;
+                var user = $$obj[$index];
+                buf.push("<li" + jade.attrs({
+                    "data-user-id": user.id
+                }, {
+                    "data-user-id": true
+                }) + "><span>Before</span><a" + jade.attrs({
+                    href: user.url
+                }, {
+                    href: true
+                }) + ">Within " + jade.escape((jade.interp = user.name) == null ? "" : jade.interp) + "</a></li>");
+            }
+        }
+    }).call(this);
+    buf.push("</ul>");
     return buf.join("");
 };
 

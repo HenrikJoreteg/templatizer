@@ -90,7 +90,7 @@ var transformMixinCall = function (statement, ns) {
     return statement;
 };
 
-module.exports = function (templateDirectory, outputFile) {
+module.exports = function (templateDirectory, outputFile, transformMixins) {
     var folders = [];
     var templates = [];
     var isWindows = process.platform === 'win32';
@@ -232,7 +232,7 @@ module.exports = function (templateDirectory, outputFile) {
             }
         });
 
-        if (removeDeclarations.length) {
+        if (removeDeclarations.length && transformMixins) {
             // Remove mixin declarations
             var len = removeDeclarations.length;
             while (len--) {
