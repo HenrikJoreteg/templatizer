@@ -1,4 +1,4 @@
-/* globals test, ok, templatizer */
+/* globals test, ok, templatizer, templatizer_unaltered */
 
 var data = {
     users: [{
@@ -35,4 +35,11 @@ test("Test mixins", function () {
     ok(users.indexOf(user_li) > -1);
     ok(users.indexOf(user_a) > -1);
     ok(user_li.indexOf(user_a) > -1);
+});
+
+test("Test altered vs unaltered mixins", function () {
+    var users = templatizer.usersMixins({users: data.users});
+    var _users = templatizer_unaltered.usersMixins({users: data.users});
+
+    ok(users === _users);
 });
