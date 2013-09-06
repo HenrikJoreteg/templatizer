@@ -58,6 +58,32 @@ exports.myfolder.nestedTemplate = function () {} // the template function
 
 The awesome thing is... there are no external dependencies because they're just functions at this point. Crazy fast, SO MUCH WIN!!!!
 
+### Mixin Support
+
+Jade has a feature called `mixins` which when compiled get treated as function declarations within the compiled function. Templatizer pulls these out of the compiled function and places them on the namespace of the parent function. For example:
+
+```jade
+// users.jade
+ul
+    each user in users
+        mixin user(user)
+
+mixin user(user)
+    // Jade mixin content
+```
+
+Templatizer will compile this as
+
+```js
+// Compiled fn from file
+exports.users = function () {}
+
+// Compiled mixin fn
+exports.users.user = function (user) {}
+```
+
+This is helpful as it allows you to call `users()` to create your list and then `users.user()` to render just a single item in the list.
+
 ## Sample?
 
 Check out the `demo_output.js` file for... err... demo output built from the `templates` directory in this project.

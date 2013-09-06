@@ -1,4 +1,6 @@
 var jade = require('jade');
+var esprima = require('esprima');
+var escodegen = require('escodegen');
 var uglifyjs = require('uglify-js');
 var walkdir = require('walkdir');
 var path = require('path');
@@ -10,7 +12,85 @@ function beautify(code) {
     return uglifyjs.parse(code).print_to_string({beautify: true});
 }
 
-module.exports = function (templateDirectory, outputFile) {
+// Epsrima/Escodegen helpers
+var rIsMixin = /_mixin$/;
+var isMixinCall = function (expression) {
+    var sExprType = expression && expression.type,
+        sCallee = expression && expression.callee,
+        sCalleeName = sCallee && sCallee.name;
+    return sExprType === 'CallExpression' && rIsMixin.test(sCalleeName);
+};
+var traverse = function (node, func, parent) {
+    func(node, parent);//1
+    for (var key in node) { //2
+        if (node.hasOwnProperty(key)) { //3
+            var child = node[key];
+            if (typeof child === 'object' && child !== null) { //4
+                if (Array.isArray(child)) {
+                    child.forEach(function (arrayNode) { //5
+                        traverse(arrayNode, func, node);
+                    });
+                } else {
+                    traverse(child, func, node); //6
+                }
+            }
+        }
+    }
+};
+// Will transform a jade mixin fn call to
+// a call to our mixin on the parent template namespace
+var transformMixinCall = function (statement, ns) {
+    if (isMixinCall(statement.expression)) {
+        var oldName = statement.expression.callee.name;
+        var oldArgs = statement.expression.arguments;
+        statement.expression.callee = {
+            type: 'MemberExpression',
+            computed: false,
+            object: {
+                type: 'Identifier',
+                name: 'buf'
+            },
+            property: {
+                type: 'Identifier',
+                name: 'push'
+            }
+        };
+        statement.expression.arguments = [{
+            type: 'CallExpression',
+            callee: {
+                type: 'MemberExpression',
+                computed: false,
+                object: {
+                    type: 'ThisExpression'
+                },
+                property: {
+                    type: 'Identifier',
+                    name: oldName.replace('_mixin', '')
+                }
+            },
+            arguments: oldArgs
+        }];
+
+        // Passing in a namespace will transform the mixin to be called
+        // by this[ns] instead of just this
+        if (ns) {
+            statement.expression.arguments[0].callee.object = {
+                type: 'MemberExpression',
+                computed: false,
+                object: {
+                    type: 'ThisExpression'
+                },
+                property: {
+                    type: 'Identifier',
+                    name: ns
+                }
+            };
+        }
+    }
+    return statement;
+};
+
+module.exports = function (templateDirectory, outputFile, dontTransformMixins) {
     var folders = [];
     var templates = [];
     var isWindows = process.platform === 'win32';
@@ -68,13 +148,115 @@ module.exports = function (templateDirectory, outputFile) {
             pretty: false,
             filename: fullPath
         }).toString());
+        var ast = esprima.parse(template);
+        var astBody = ast.body[0].body.body;
+        var mixinOutput = '';
+        var removeDeclarations = [];
+
+        astBody.forEach(function (tree, treeI) {
+            // clone the tree so as to modify in place
+            var cloneTree = JSON.parse(JSON.stringify(tree)),
+                type = cloneTree.type,
+                declarationName = cloneTree.declarations && cloneTree.declarations[0].id.name,
+                statements = [],
+                fnTree = {},
+                generatedMixinFn = '';
+
+            if (type === 'VariableDeclaration' && rIsMixin.test(declarationName)) {
+                // It's a mixin so we'll make our changes and mark the index for removal
+                removeDeclarations.push(treeI);
+                // Get mixin function from variable declaration
+                fnTree = cloneTree.declarations[0].init;
+
+                // Change to an anonymous function to be assigned later
+                fnTree.type = 'FunctionDeclaration';
+                fnTree.id = {
+                    type: 'Identifier',
+                    name: 'anonymous'
+                };
+                statements = fnTree.body.body;
+
+                // Replace calls to other mixins within the file
+                statements.forEach(function (statement, statementI) {
+                    statements[statementI] = transformMixinCall(statement);
+                });
+                
+                // Add a variable declaration for the buf array
+                // since that was previously handled by jade
+                statements[0].declarations.push({
+                    type: 'VariableDeclarator',
+                    id: {
+                        type: 'Identifier',
+                        name: 'buf'
+                    },
+                    init: {
+                        type: 'ArrayExpression',
+                        elements: []
+                    }
+                });
+                // return the buf array
+                statements.push({
+                    type: 'ReturnStatement',
+                    argument: {
+                        type: 'CallExpression',
+                        callee: {
+                            type: 'MemberExpression',
+                            computed: false,
+                            object: {
+                                type: 'Identifier',
+                                name: 'buf'
+                            },
+                            property: {
+                                type: 'Identifier',
+                                name: 'join'
+                            }
+                        },
+                        arguments: [
+                            {
+                                type: 'Literal',
+                                value: '',
+                                raw: '""'
+                            }
+                        ]
+                    }
+                });
+
+                // Generate fn and store until it can be added to output after main fn
+                generatedMixinFn = beautify(escodegen.generate(fnTree));
+                mixinOutput += [
+                    '',
+                    '// ' + name + '.jade:' + declarationName + ' compiled template',
+                    'exports.' + dirString + '.' + declarationName.replace('_mixin', '') + ' = ' + generatedMixinFn + ';',
+                    ''
+                ].join('\n');
+            }
+        });
+
+        if (removeDeclarations.length && !dontTransformMixins) {
+            // Remove mixin declarations
+            var len = removeDeclarations.length;
+            while (len--) {
+                astBody.splice(removeDeclarations[len], 1);
+            }
+
+            // Traverse and replace mixin calls with buf.push(this[ns][mixin]())
+            traverse(ast, function (node, parent) {
+                if (node.type === 'CallExpression' && node.callee && rIsMixin.test(node.callee.name)) {
+                    // transform the call to the mixin fn and namespace it on this[namespace]
+                    parent = transformMixinCall(parent, _.last(dirString.split('.')));
+                }
+            });
+
+            // Regenerate our template function
+            template = beautify(escodegen.generate(ast));
+        }
 
         output += [
             '',
             '// ' + name + '.jade compiled template',
             'exports.' + dirString + ' = ' + template + ';',
             ''
-        ].join('\n');
+        ].join('\n') + mixinOutput;
     });
 
     output += [

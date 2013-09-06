@@ -63,20 +63,38 @@ exports.users = function anonymous(locals) {
 exports.usersMixins = function anonymous(locals) {
     var buf = [];
     var locals_ = locals || {}, users = locals_.users;
+    var user_li_mixin = function(user) {
+        var block = this.block, attributes = this.attributes || {}, escaped = this.escaped || {};
+        buf.push("<li" + jade.attrs({
+            "data-user-id": user.id
+        }, {
+            "data-user-id": true
+        }) + "><span>Before</span>");
+        user_a_mixin(user);
+        buf.push("</li>");
+    };
+    var user_a_mixin = function(user) {
+        var block = this.block, attributes = this.attributes || {}, escaped = this.escaped || {};
+        buf.push("<a" + jade.attrs({
+            href: user.url
+        }, {
+            href: true
+        }) + ">Within " + jade.escape((jade.interp = user.name) == null ? "" : jade.interp) + "</a>");
+    };
     buf.push("<ul>");
     (function() {
         var $$obj = users;
         if ("number" == typeof $$obj.length) {
             for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
                 var user = $$obj[$index];
-                buf.push(this.usersMixins.user_li(user));
+                user_li_mixin(user);
             }
         } else {
             var $$l = 0;
             for (var $index in $$obj) {
                 $$l++;
                 var user = $$obj[$index];
-                buf.push(this.usersMixins.user_li(user));
+                user_li_mixin(user);
             }
         }
     }).call(this);
