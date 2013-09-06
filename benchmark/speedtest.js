@@ -26,13 +26,13 @@ var ITERATIONS = 100000;
 var i = ITERATIONS;
 
 // build our demo file
-templatizer(path.resolve(__dirname, '../templates'), path.resolve(__dirname, '../demo_output.js'), true);
-templatizer(path.resolve(__dirname, '../templates'), path.resolve(__dirname, '../demo_output_mixins.js'));
+templatizer(path.resolve(__dirname, '../templates'), path.resolve(__dirname, '../test/demo_output_no_mixins.js'), true);
+templatizer(path.resolve(__dirname, '../templates'), path.resolve(__dirname, '../demo_output.js'));
 console.log('\nSetting up templatizer'.bold);
 console.log('1.'.grey + ' built: demo_output.js, demo_output_mixins.js');
 console.log('2.'.grey + ' now reading in generated files');
+var templatesNoMixins = require('../test/demo_output_no_mixins');
 var templates = require('../demo_output');
-var templatesMixins = require('../demo_output_mixins');
 
 i = ITERATIONS;
 console.log('3.'.grey + ' running templatizer version ' + ITERATIONS + ' times.');
@@ -49,13 +49,13 @@ console.timeEnd('templatizer');
 i = ITERATIONS;
 console.log('5.'.grey + ' running templatizer with standard mixins version ' + ITERATIONS + ' times.');
 console.time('templatizer');
-while (i--) templates.usersMixins(complexData);
+while (i--) templatesNoMixins.usersMixins(complexData);
 console.timeEnd('templatizer');
 
 i = ITERATIONS;
 console.log('4.'.grey + ' running templatizer with altered mixins version ' + ITERATIONS + ' times.');
 console.time('templatizer');
-while (i--) templatesMixins.usersMixins(complexData);
+while (i--) templates.usersMixins(complexData);
 console.timeEnd('templatizer');
 
 

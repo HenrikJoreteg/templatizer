@@ -16,10 +16,6 @@ var data = {
     }]
 };
 
-var outerHTML = function ($el) {
-    return $('<div>').append($el.clone()).html();
-};
-
 test("Test mixins", function () {
     var users = templatizer.usersMixins({users: data.users});
     var user_li = templatizer.usersMixins.user_li(data.users[0]);
