@@ -94,6 +94,7 @@ MIT
 
 ## Contributors
 
-Aaron McCall [github profile](https://github.com/aaronmccall)
+- Aaron McCall [github profile](https://github.com/aaronmccall)
+- Luke Karrys [github profile](https://github.com/lukekarrys)
 
 If you think this is cool, you should follow me on twitter: [@HenrikJoreteg](http://twitter.com/henrikjoreteg)
