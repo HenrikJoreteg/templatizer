@@ -1,0 +1,11 @@
+mixin user_li(user)
+    li(data-user-id=user.id)
+        span Before
+        mixin user_a(user)
+
+mixin user_a(user)
+    a(href=user.url) Within #{user.name}
+
+ul
+    each user in users
+        mixin user_li(user)
