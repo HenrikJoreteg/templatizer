@@ -37,6 +37,16 @@ var traverse = function (node, func, parent) {
         }
     }
 };
+// Will traverse all mixin calls in a tree
+// and transform all of them
+var transformAllMixins = function (tree, ns) {
+    traverse(tree, function (node, parent) {
+        if (node.type === 'CallExpression' && node.callee && rIsMixin.test(node.callee.name)) {
+            // transform the call to the mixin fn and namespace it on this[ns]
+            parent = transformMixinCall(parent, ns);
+        }
+    });
+};
 // Will transform a jade mixin fn call to
 // a call to our mixin on the parent template namespace
 var transformMixinCall = function (statement, ns) {
@@ -177,9 +187,7 @@ module.exports = function (templateDirectory, outputFile, dontTransformMixins) {
                 statements = fnTree.body.body;
 
                 // Replace calls to other mixins within the file
-                statements.forEach(function (statement, statementI) {
-                    statements[statementI] = transformMixinCall(statement);
-                });
+                transformAllMixins(statements);
                 
                 // Add a variable declaration for the buf array
                 // since that was previously handled by jade
@@ -240,12 +248,7 @@ module.exports = function (templateDirectory, outputFile, dontTransformMixins) {
             }
 
             // Traverse and replace mixin calls with buf.push(this[ns][mixin]())
-            traverse(ast, function (node, parent) {
-                if (node.type === 'CallExpression' && node.callee && rIsMixin.test(node.callee.name)) {
-                    // transform the call to the mixin fn and namespace it on this[namespace]
-                    parent = transformMixinCall(parent, _.last(dirString.split('.')));
-                }
-            });
+            transformAllMixins(ast, _.last(dirString.split('.')));
 
             // Regenerate our template function
             template = beautify(escodegen.generate(ast));
