@@ -100,7 +100,10 @@ var transformMixinCall = function (statement, ns) {
     return statement;
 };
 
-module.exports = function (templateDirectory, outputFile, dontTransformMixins) {
+module.exports = function (templateDirectories, outputFile, dontTransformMixins) {
+    if (typeof templateDirectories === "string") {
+      templateDirectories = [templateDirectories]
+    }
     var folders = [];
     var templates = [];
     var isWindows = process.platform === 'win32';
@@ -110,7 +113,7 @@ module.exports = function (templateDirectory, outputFile, dontTransformMixins) {
             __dirname + '/node_modules/jade/runtime.min.js',
             __dirname + '/jaderuntime.min.js'
         ];
-    var contents = walkdir.sync(templateDirectory);
+
     var jadeRuntime = fs.readFileSync(_.find(placesToLook, fs.existsSync)).toString();
     var output = [
         '(function () {',
@@ -121,19 +124,28 @@ module.exports = function (templateDirectory, outputFile, dontTransformMixins) {
         ''
     ].join('\n');
 
-    contents.forEach(function (file) {
-        var item = file.replace(templateDirectory, '').slice(1);
-        if (path.extname(item) === '' && path.basename(item).charAt(0) !== '.') {
-            folders.push(item);
-        } else if (path.extname(item) === '.jade') {
-            templates.push(item);
-        }
-    });
+    templateDirectories.forEach(function(templateDirectory){
+      var contents = walkdir.sync(templateDirectory);
 
-    folders = _.sortBy(folders, function (folder) {
-        var arr = folder.split(pathSep);
-        return arr.length;
-    });
+      contents.forEach(function (file) {
+          var item = file.replace(templateDirectory, '').slice(1);
+          if (path.extname(item) === '' && path.basename(item).charAt(0) !== '.') {
+              folders.push(item);
+          } else if (path.extname(item) === '.jade') {
+              var name = item
+              item = {
+                file: name,
+                fullPath: templateDirectory + '/' + name
+              }
+              templates.push(item);
+          }
+      });
+
+      folders = _.sortBy(folders, function (folder) {
+          var arr = folder.split(pathSep);
+          return arr.length;
+      });
+    })
 
     output += '\n// create our folder objects';
     folders.forEach(function (folder) {
@@ -142,21 +154,20 @@ module.exports = function (templateDirectory, outputFile, dontTransformMixins) {
     });
     output += '\n';
 
-    templates.forEach(function (file) {
-        var name = path.basename(file, '.jade');
+    templates.forEach(function (item) {
+        var name = path.basename(item.file, '.jade');
         var dirString = function () {
-            var dirname = path.dirname(file);
+            var dirname = path.dirname(item.file);
             var arr = dirname.split(pathSep);
             if (dirname === '.') return name;
             arr.push(name);
             return arr.join('.');
         }();
-        var fullPath = templateDirectory + '/' + file;
-        var template = beautify(jade.compile(fs.readFileSync(fullPath), {
+        var template = beautify(jade.compile(fs.readFileSync(item.fullPath), {
             client: true,
             compileDebug: false,
             pretty: false,
-            filename: fullPath
+            filename: item.fullPath
         }).toString());
         var ast = esprima.parse(template);
         var astBody = ast.body[0].body.body;
@@ -188,7 +199,7 @@ module.exports = function (templateDirectory, outputFile, dontTransformMixins) {
 
                 // Replace calls to other mixins within the file
                 transformAllMixins(statements);
-                
+
                 // Add a variable declaration for the buf array
                 // since that was previously handled by jade
                 statements[0].declarations.push({
