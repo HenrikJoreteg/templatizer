@@ -59,6 +59,47 @@ exports.users = function anonymous(locals) {
     return buf.join("");
 };
 
+// userscomplex.jade compiled template
+exports.userscomplex = function anonymous(locals) {
+    var buf = [];
+    var locals_ = locals || {}, users = locals_.users;
+    buf.push("<ul>");
+    (function() {
+        var $$obj = users;
+        if ("number" == typeof $$obj.length) {
+            for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
+                var user = $$obj[$index];
+                buf.push("<li" + jade.attrs({
+                    "data-user-id": user.id
+                }, {
+                    "data-user-id": true
+                }) + "><span>Before</span><a" + jade.attrs({
+                    href: user.url
+                }, {
+                    href: true
+                }) + ">Within " + jade.escape((jade.interp = user.name) == null ? "" : jade.interp) + "</a></li>");
+            }
+        } else {
+            var $$l = 0;
+            for (var $index in $$obj) {
+                $$l++;
+                var user = $$obj[$index];
+                buf.push("<li" + jade.attrs({
+                    "data-user-id": user.id
+                }, {
+                    "data-user-id": true
+                }) + "><span>Before</span><a" + jade.attrs({
+                    href: user.url
+                }, {
+                    href: true
+                }) + ">Within " + jade.escape((jade.interp = user.name) == null ? "" : jade.interp) + "</a></li>");
+            }
+        }
+    }).call(this);
+    buf.push("</ul>");
+    return buf.join("");
+};
+
 // usersMixins.jade compiled template
 exports.usersMixins = function anonymous(locals) {
     var buf = [];
@@ -105,47 +146,6 @@ exports.usersMixins.user_a = function anonymous(user) {
     }, {
         href: true
     }) + ">Within " + jade.escape((jade.interp = user.name) == null ? "" : jade.interp) + "</a>");
-    return buf.join("");
-};
-
-// userscomplex.jade compiled template
-exports.userscomplex = function anonymous(locals) {
-    var buf = [];
-    var locals_ = locals || {}, users = locals_.users;
-    buf.push("<ul>");
-    (function() {
-        var $$obj = users;
-        if ("number" == typeof $$obj.length) {
-            for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
-                var user = $$obj[$index];
-                buf.push("<li" + jade.attrs({
-                    "data-user-id": user.id
-                }, {
-                    "data-user-id": true
-                }) + "><span>Before</span><a" + jade.attrs({
-                    href: user.url
-                }, {
-                    href: true
-                }) + ">Within " + jade.escape((jade.interp = user.name) == null ? "" : jade.interp) + "</a></li>");
-            }
-        } else {
-            var $$l = 0;
-            for (var $index in $$obj) {
-                $$l++;
-                var user = $$obj[$index];
-                buf.push("<li" + jade.attrs({
-                    "data-user-id": user.id
-                }, {
-                    "data-user-id": true
-                }) + "><span>Before</span><a" + jade.attrs({
-                    href: user.url
-                }, {
-                    href: true
-                }) + ">Within " + jade.escape((jade.interp = user.name) == null ? "" : jade.interp) + "</a></li>");
-            }
-        }
-    }).call(this);
-    buf.push("</ul>");
     return buf.join("");
 };
 

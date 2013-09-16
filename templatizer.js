@@ -102,7 +102,7 @@ var transformMixinCall = function (statement, ns) {
 
 module.exports = function (templateDirectories, outputFile, dontTransformMixins) {
     if (typeof templateDirectories === "string") {
-      templateDirectories = [templateDirectories]
+        templateDirectories = [templateDirectories];
     }
     var folders = [];
     var templates = [];
@@ -124,28 +124,28 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
         ''
     ].join('\n');
 
-    templateDirectories.forEach(function(templateDirectory){
-      var contents = walkdir.sync(templateDirectory);
+    templateDirectories.forEach(function (templateDirectory) {
+        var contents = walkdir.sync(templateDirectory);
 
-      contents.forEach(function (file) {
-          var item = file.replace(templateDirectory, '').slice(1);
-          if (path.extname(item) === '' && path.basename(item).charAt(0) !== '.') {
-              folders.push(item);
-          } else if (path.extname(item) === '.jade') {
-              var name = item
-              item = {
-                file: name,
-                fullPath: templateDirectory + '/' + name
-              }
-              templates.push(item);
-          }
-      });
+        contents.forEach(function (file) {
+            var item = file.replace(templateDirectory, '').slice(1);
+            if (path.extname(item) === '' && path.basename(item).charAt(0) !== '.') {
+                folders.push(item);
+            } else if (path.extname(item) === '.jade') {
+                var name = item;
+                item = {
+                    file: name,
+                    fullPath: templateDirectory + '/' + name
+                };
+                templates.push(item);
+            }
+        });
 
-      folders = _.sortBy(folders, function (folder) {
-          var arr = folder.split(pathSep);
-          return arr.length;
-      });
-    })
+        folders = _.sortBy(folders, function (folder) {
+            var arr = folder.split(pathSep);
+            return arr.length;
+        });
+    });
 
     output += '\n// create our folder objects';
     folders.forEach(function (folder) {
