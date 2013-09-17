@@ -64,19 +64,22 @@ exports.usersMixins = function anonymous(locals) {
     var buf = [];
     var locals_ = locals || {}, users = locals_.users;
     buf.push("<ul>");
+    var i = 0;
     (function() {
         var $$obj = users;
         if ("number" == typeof $$obj.length) {
             for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
                 var user = $$obj[$index];
-                buf.push(this.usersMixins.user_li(user));
+                buf.push(exports.usersMixins.user_li(user, i));
+                i++;
             }
         } else {
             var $$l = 0;
             for (var $index in $$obj) {
                 $$l++;
                 var user = $$obj[$index];
-                buf.push(this.usersMixins.user_li(user));
+                buf.push(exports.usersMixins.user_li(user, i));
+                i++;
             }
         }
     }).call(this);
@@ -85,25 +88,29 @@ exports.usersMixins = function anonymous(locals) {
 };
 
 // usersMixins.jade:user_li_mixin compiled template
-exports.usersMixins.user_li = function anonymous(user) {
+exports.usersMixins.user_li = function anonymous(user, index) {
     var block = this.block, attributes = this.attributes || {}, escaped = this.escaped || {}, buf = [];
     buf.push("<li" + jade.attrs({
-        "data-user-id": user.id
+        "data-user-id": user.id,
+        "data-user-index": index
     }, {
-        "data-user-id": true
+        "data-user-id": true,
+        "data-user-index": true
     }) + "><span>Before</span>");
-    buf.push(this.user_a(user));
+    buf.push(exports.usersMixins.user_a(user, index));
     buf.push("</li>");
     return buf.join("");
 };
 
 // usersMixins.jade:user_a_mixin compiled template
-exports.usersMixins.user_a = function anonymous(user) {
+exports.usersMixins.user_a = function anonymous(user, index) {
     var block = this.block, attributes = this.attributes || {}, escaped = this.escaped || {}, buf = [];
     buf.push("<a" + jade.attrs({
-        href: user.url
+        href: user.url,
+        "data-user-index": index
     }, {
-        href: true
+        href: true,
+        "data-user-index": true
     }) + ">Within " + jade.escape((jade.interp = user.name) == null ? "" : jade.interp) + "</a>");
     return buf.join("");
 };
