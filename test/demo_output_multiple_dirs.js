@@ -156,6 +156,13 @@ exports.userscomplex = function anonymous(locals) {
     return buf.join("");
 };
 
+// test.jade compiled template
+exports.test = function anonymous(locals) {
+    var buf = [];
+    buf.push("<p>test</p>");
+    return buf.join("");
+};
+
 
 // attach to window or export with commonJS
 if (typeof module !== "undefined" && typeof module.exports !== "undefined") {

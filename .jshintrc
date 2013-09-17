@@ -8,7 +8,6 @@
     "undef": true,
     "browser": true,
     "indent": 4,
-    "es5": true,
     "predef": [
         "app",
         "$",

@@ -59,6 +59,84 @@ exports.users = function anonymous(locals) {
     return buf.join("");
 };
 
+// usersMixins.jade compiled template
+exports.usersMixins = function anonymous(locals) {
+    var buf = [];
+    var locals_ = locals || {}, users = locals_.users;
+    var user_li_mixin = function(user, index) {
+        var block = this.block, attributes = this.attributes || {}, escaped = this.escaped || {};
+        buf.push("<li" + jade.attrs({
+            "data-user-id": user.id,
+            "data-user-index": index
+        }, {
+            "data-user-id": true,
+            "data-user-index": true
+        }) + "><span>Before</span>");
+        user_a_mixin(user, index);
+        buf.push("</li>");
+    };
+    var user_a_mixin = function(user, index) {
+        var block = this.block, attributes = this.attributes || {}, escaped = this.escaped || {};
+        buf.push("<a" + jade.attrs({
+            href: user.url,
+            "data-user-index": index
+        }, {
+            href: true,
+            "data-user-index": true
+        }) + ">Within " + jade.escape((jade.interp = user.name) == null ? "" : jade.interp) + "</a>");
+    };
+    buf.push("<ul>");
+    var i = 0;
+    (function() {
+        var $$obj = users;
+        if ("number" == typeof $$obj.length) {
+            for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
+                var user = $$obj[$index];
+                user_li_mixin(user, i);
+                i++;
+            }
+        } else {
+            var $$l = 0;
+            for (var $index in $$obj) {
+                $$l++;
+                var user = $$obj[$index];
+                user_li_mixin(user, i);
+                i++;
+            }
+        }
+    }).call(this);
+    buf.push("</ul>");
+    return buf.join("");
+};
+
+// usersMixins.jade:user_li_mixin compiled template
+exports.usersMixins.user_li = function anonymous(user, index) {
+    var block = this.block, attributes = this.attributes || {}, escaped = this.escaped || {}, buf = [];
+    buf.push("<li" + jade.attrs({
+        "data-user-id": user.id,
+        "data-user-index": index
+    }, {
+        "data-user-id": true,
+        "data-user-index": true
+    }) + "><span>Before</span>");
+    buf.push(exports.usersMixins.user_a(user, index));
+    buf.push("</li>");
+    return buf.join("");
+};
+
+// usersMixins.jade:user_a_mixin compiled template
+exports.usersMixins.user_a = function anonymous(user, index) {
+    var block = this.block, attributes = this.attributes || {}, escaped = this.escaped || {}, buf = [];
+    buf.push("<a" + jade.attrs({
+        href: user.url,
+        "data-user-index": index
+    }, {
+        href: true,
+        "data-user-index": true
+    }) + ">Within " + jade.escape((jade.interp = user.name) == null ? "" : jade.interp) + "</a>");
+    return buf.join("");
+};
+
 // userscomplex.jade compiled template
 exports.userscomplex = function anonymous(locals) {
     var buf = [];
@@ -97,73 +175,6 @@ exports.userscomplex = function anonymous(locals) {
         }
     }).call(this);
     buf.push("</ul>");
-    return buf.join("");
-};
-
-// usersMixins.jade compiled template
-exports.usersMixins = function anonymous(locals) {
-    var buf = [];
-    var locals_ = locals || {}, users = locals_.users;
-    var user_li_mixin = function(user) {
-        var block = this.block, attributes = this.attributes || {}, escaped = this.escaped || {};
-        buf.push("<li" + jade.attrs({
-            "data-user-id": user.id
-        }, {
-            "data-user-id": true
-        }) + "><span>Before</span>");
-        user_a_mixin(user);
-        buf.push("</li>");
-    };
-    var user_a_mixin = function(user) {
-        var block = this.block, attributes = this.attributes || {}, escaped = this.escaped || {};
-        buf.push("<a" + jade.attrs({
-            href: user.url
-        }, {
-            href: true
-        }) + ">Within " + jade.escape((jade.interp = user.name) == null ? "" : jade.interp) + "</a>");
-    };
-    buf.push("<ul>");
-    (function() {
-        var $$obj = users;
-        if ("number" == typeof $$obj.length) {
-            for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
-                var user = $$obj[$index];
-                user_li_mixin(user);
-            }
-        } else {
-            var $$l = 0;
-            for (var $index in $$obj) {
-                $$l++;
-                var user = $$obj[$index];
-                user_li_mixin(user);
-            }
-        }
-    }).call(this);
-    buf.push("</ul>");
-    return buf.join("");
-};
-
-// usersMixins.jade:user_li_mixin compiled template
-exports.usersMixins.user_li = function anonymous(user) {
-    var block = this.block, attributes = this.attributes || {}, escaped = this.escaped || {}, buf = [];
-    buf.push("<li" + jade.attrs({
-        "data-user-id": user.id
-    }, {
-        "data-user-id": true
-    }) + "><span>Before</span>");
-    buf.push(this.user_a(user));
-    buf.push("</li>");
-    return buf.join("");
-};
-
-// usersMixins.jade:user_a_mixin compiled template
-exports.usersMixins.user_a = function anonymous(user) {
-    var block = this.block, attributes = this.attributes || {}, escaped = this.escaped || {}, buf = [];
-    buf.push("<a" + jade.attrs({
-        href: user.url
-    }, {
-        href: true
-    }) + ">Within " + jade.escape((jade.interp = user.name) == null ? "" : jade.interp) + "</a>");
     return buf.join("");
 };
 

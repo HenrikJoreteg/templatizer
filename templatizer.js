@@ -1,111 +1,20 @@
 var jade = require('jade');
-var esprima = require('esprima');
-var escodegen = require('escodegen');
-var uglifyjs = require('uglify-js');
+var beautify = require('./lib/beautify');
+var jadeAst = require('./lib/jade-ast');
 var walkdir = require('walkdir');
 var path = require('path');
 var _ = require('underscore');
 var fs = require('fs');
 
 
-function beautify(code) {
-    return uglifyjs.parse(code).print_to_string({beautify: true});
-}
-
-// Epsrima/Escodegen helpers
-var rIsMixin = /_mixin$/;
-var isMixinCall = function (expression) {
-    var sExprType = expression && expression.type,
-        sCallee = expression && expression.callee,
-        sCalleeName = sCallee && sCallee.name;
-    return sExprType === 'CallExpression' && rIsMixin.test(sCalleeName);
-};
-var traverse = function (node, func, parent) {
-    func(node, parent);//1
-    for (var key in node) { //2
-        if (node.hasOwnProperty(key)) { //3
-            var child = node[key];
-            if (typeof child === 'object' && child !== null) { //4
-                if (Array.isArray(child)) {
-                    child.forEach(function (arrayNode) { //5
-                        traverse(arrayNode, func, node);
-                    });
-                } else {
-                    traverse(child, func, node); //6
-                }
-            }
-        }
-    }
-};
-// Will traverse all mixin calls in a tree
-// and transform all of them
-var transformAllMixins = function (tree, ns) {
-    traverse(tree, function (node, parent) {
-        if (node.type === 'CallExpression' && node.callee && rIsMixin.test(node.callee.name)) {
-            // transform the call to the mixin fn and namespace it on this[ns]
-            parent = transformMixinCall(parent, ns);
-        }
-    });
-};
-// Will transform a jade mixin fn call to
-// a call to our mixin on the parent template namespace
-var transformMixinCall = function (statement, ns) {
-    if (isMixinCall(statement.expression)) {
-        var oldName = statement.expression.callee.name;
-        var oldArgs = statement.expression.arguments;
-        statement.expression.callee = {
-            type: 'MemberExpression',
-            computed: false,
-            object: {
-                type: 'Identifier',
-                name: 'buf'
-            },
-            property: {
-                type: 'Identifier',
-                name: 'push'
-            }
-        };
-        statement.expression.arguments = [{
-            type: 'CallExpression',
-            callee: {
-                type: 'MemberExpression',
-                computed: false,
-                object: {
-                    type: 'ThisExpression'
-                },
-                property: {
-                    type: 'Identifier',
-                    name: oldName.replace('_mixin', '')
-                }
-            },
-            arguments: oldArgs
-        }];
-
-        // Passing in a namespace will transform the mixin to be called
-        // by this[ns] instead of just this
-        if (ns) {
-            statement.expression.arguments[0].callee.object = {
-                type: 'MemberExpression',
-                computed: false,
-                object: {
-                    type: 'ThisExpression'
-                },
-                property: {
-                    type: 'Identifier',
-                    name: ns
-                }
-            };
-        }
-    }
-    return statement;
-};
-
 module.exports = function (templateDirectories, outputFile, dontTransformMixins) {
     if (typeof templateDirectories === "string") {
         templateDirectories = [templateDirectories];
     }
+    var parentObjName = 'exports'; // This is just to use in multiple places
     var folders = [];
     var templates = [];
+    var _readTemplates = [];
     var isWindows = process.platform === 'win32';
     var pathSep = path.sep || (isWindows ? '\\' : '/');
     var placesToLook = [
@@ -117,10 +26,10 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
     var jadeRuntime = fs.readFileSync(_.find(placesToLook, fs.existsSync)).toString();
     var output = [
         '(function () {',
-        'var root = this, exports = {};',
+        'var root = this, ' + parentObjName + ' = {};',
         '',
         '// The jade runtime:',
-        'var jade = exports.' + jadeRuntime,
+        'var jade = ' + parentObjName + '.' + jadeRuntime,
         ''
     ].join('\n');
 
@@ -130,14 +39,13 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
         contents.forEach(function (file) {
             var item = file.replace(templateDirectory, '').slice(1);
             if (path.extname(item) === '' && path.basename(item).charAt(0) !== '.') {
-                folders.push(item);
+                if (folders.indexOf(item) === -1) folders.push(item);
             } else if (path.extname(item) === '.jade') {
-                var name = item;
-                item = {
-                    file: name,
-                    fullPath: templateDirectory + '/' + name
-                };
-                templates.push(item);
+                // Currently will ignore same path jade files from multiple template dirs
+                if (_readTemplates.indexOf(item) === -1) {
+                    _readTemplates.push(item);
+                    templates.push(templateDirectory + '/' + item);
+                }
             }
         });
 
@@ -150,125 +58,43 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
     output += '\n// create our folder objects';
     folders.forEach(function (folder) {
         var arr = folder.split(pathSep);
-        output += '\nexports.' + arr.join('.') + ' = {};';
+        output += '\n' + parentObjName + '.' + arr.join('.') + ' = {};';
     });
     output += '\n';
 
     templates.forEach(function (item) {
-        var name = path.basename(item.file, '.jade');
+        var name = path.basename(item, '.jade');
         var dirString = function () {
-            var dirname = path.dirname(item.file);
-            var arr = dirname.split(pathSep);
+            var itemTemplateDir = _.find(templateDirectories, function (templateDirectory) {
+                return item.indexOf(templateDirectory + '/') === 0;
+            });
+            var dirname = path.dirname(item).replace(itemTemplateDir, '');
             if (dirname === '.') return name;
+            var arr = dirname.split(pathSep);
             arr.push(name);
-            return arr.join('.');
+            return _.compact(arr).join('.');
         }();
-        var template = beautify(jade.compile(fs.readFileSync(item.fullPath), {
+        var mixinOutput = '';
+        var template = beautify(jade.compile(fs.readFileSync(item, 'utf-8'), {
             client: true,
             compileDebug: false,
             pretty: false,
-            filename: item.fullPath
+            filename: item
         }).toString());
-        var ast = esprima.parse(template);
-        var astBody = ast.body[0].body.body;
-        var mixinOutput = '';
-        var removeDeclarations = [];
-
-        astBody.forEach(function (tree, treeI) {
-            // clone the tree so as to modify in place
-            var cloneTree = JSON.parse(JSON.stringify(tree)),
-                type = cloneTree.type,
-                declarationName = cloneTree.declarations && cloneTree.declarations[0].id.name,
-                statements = [],
-                fnTree = {},
-                generatedMixinFn = '';
-
-            if (type === 'VariableDeclaration' && rIsMixin.test(declarationName)) {
-                // It's a mixin so we'll make our changes and mark the index for removal
-                removeDeclarations.push(treeI);
-                // Get mixin function from variable declaration
-                fnTree = cloneTree.declarations[0].init;
-
-                // Change to an anonymous function to be assigned later
-                fnTree.type = 'FunctionDeclaration';
-                fnTree.id = {
-                    type: 'Identifier',
-                    name: 'anonymous'
-                };
-                statements = fnTree.body.body;
-
-                // Replace calls to other mixins within the file
-                transformAllMixins(statements);
-
-                // Add a variable declaration for the buf array
-                // since that was previously handled by jade
-                statements[0].declarations.push({
-                    type: 'VariableDeclarator',
-                    id: {
-                        type: 'Identifier',
-                        name: 'buf'
-                    },
-                    init: {
-                        type: 'ArrayExpression',
-                        elements: []
-                    }
-                });
-                // return the buf array
-                statements.push({
-                    type: 'ReturnStatement',
-                    argument: {
-                        type: 'CallExpression',
-                        callee: {
-                            type: 'MemberExpression',
-                            computed: false,
-                            object: {
-                                type: 'Identifier',
-                                name: 'buf'
-                            },
-                            property: {
-                                type: 'Identifier',
-                                name: 'join'
-                            }
-                        },
-                        arguments: [
-                            {
-                                type: 'Literal',
-                                value: '',
-                                raw: '""'
-                            }
-                        ]
-                    }
-                });
-
-                // Generate fn and store until it can be added to output after main fn
-                generatedMixinFn = beautify(escodegen.generate(fnTree));
-                mixinOutput += [
-                    '',
-                    '// ' + name + '.jade:' + declarationName + ' compiled template',
-                    'exports.' + dirString + '.' + declarationName.replace('_mixin', '') + ' = ' + generatedMixinFn + ';',
-                    ''
-                ].join('\n');
-            }
+        var astResult = jadeAst.getMixins({
+            template: template,
+            templateName: name,
+            dirString: dirString,
+            parentObjName: parentObjName
         });
 
-        if (removeDeclarations.length && !dontTransformMixins) {
-            // Remove mixin declarations
-            var len = removeDeclarations.length;
-            while (len--) {
-                astBody.splice(removeDeclarations[len], 1);
-            }
-
-            // Traverse and replace mixin calls with buf.push(this[ns][mixin]())
-            transformAllMixins(ast, _.last(dirString.split('.')));
-
-            // Regenerate our template function
-            template = beautify(escodegen.generate(ast));
-        }
+        mixinOutput = astResult.mixins;
+        if (!dontTransformMixins) template = astResult.template;
 
         output += [
             '',
             '// ' + name + '.jade compiled template',
-            'exports.' + dirString + ' = ' + template + ';',
+            parentObjName + '.' + dirString + ' = ' + template + ';',
             ''
         ].join('\n') + mixinOutput;
     });
@@ -277,11 +103,11 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
         '\n',
         '// attach to window or export with commonJS',
         'if (typeof module !== "undefined" && typeof module.exports !== "undefined") {',
-        '    module.exports = exports;',
+        '    module.exports = ' + parentObjName + ';',
         '} else if (typeof define === "function" && define.amd) {',
-        '    define(exports);',
+        '    define(' + parentObjName + ');',
         '} else {',
-        '    root.templatizer = exports;',
+        '    root.templatizer = ' + parentObjName + ';',
         '}',
         '',
         '})();'
