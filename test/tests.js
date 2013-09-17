@@ -33,6 +33,27 @@ test("Test mixins", function () {
     ok(user_li.indexOf(user_a) > -1);
 });
 
+test("Test calling templates with different context", function () {
+    var usersObj = {template: templatizer.usersMixins};
+    var user_liObj = {template: templatizer.usersMixins.user_li};
+    var user_aObj = {template: templatizer.usersMixins.user_a};
+
+    var users = usersObj.template({users: data.users});
+    var user_li = user_liObj.template(data.users[0], 0);
+    var user_a = user_aObj.template(data.users[0], 0);
+    
+    var _users = '<ul>';
+    for (var i = 0, m = data.users.length; i < m; i++) {
+        _users += templatizer.usersMixins.user_li(data.users[i], i);
+    }
+    _users += '</ul>';
+
+    ok(users === _users);
+    ok(users.indexOf(user_li) > -1);
+    ok(users.indexOf(user_a) > -1);
+    ok(user_li.indexOf(user_a) > -1);
+});
+
 test("Test altered vs unaltered mixins", function () {
     var users = templatizer.usersMixins({users: data.users});
     var _users = templatizer_unaltered.usersMixins({users: data.users});
