@@ -57,6 +57,11 @@ test("Test calling templates with different context", function () {
 test("Test multiple dirs", function () {
     ok(templatizer_multiple_dirs.hasOwnProperty('test'));
     ok(!templatizer.hasOwnProperty('test'));
+
+    ok(templatizer_multiple_dirs.otherfolder.hasOwnProperty('othertweet'));
+    ok(templatizer_multiple_dirs.otherfolder.hasOwnProperty('othertweet2'));
+    ok(templatizer.otherfolder.hasOwnProperty('othertweet'));
+    ok(!templatizer.otherfolder.hasOwnProperty('othertweet2'));
 });
 
 test("Test altered vs unaltered mixins", function () {

@@ -156,6 +156,13 @@ exports.userscomplex = function anonymous(locals) {
     return buf.join("");
 };
 
+// othertweet2.jade compiled template
+exports.otherfolder.othertweet2 = function anonymous(locals) {
+    var buf = [];
+    buf.push("<p>test</p>");
+    return buf.join("");
+};
+
 // test.jade compiled template
 exports.test = function anonymous(locals) {
     var buf = [];

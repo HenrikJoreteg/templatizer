@@ -41,11 +41,13 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
             if (path.extname(item) === '' && path.basename(item).charAt(0) !== '.') {
                 if (folders.indexOf(item) === -1) folders.push(item);
             } else if (path.extname(item) === '.jade') {
-                // Currently will ignore same path jade files from multiple template dirs
-                if (_readTemplates.indexOf(item) === -1) {
-                    _readTemplates.push(item);
-                    templates.push(templateDirectory + '/' + item);
+                // Throw an err if we are about to override a template
+                if (_readTemplates.indexOf(item) > -1) {
+                    throw new Error(item + ' from ' + templateDirectory + '/' + item + ' already exists in ' + templates[_readTemplates.indexOf(item)]);
                 }
+                
+                _readTemplates.push(item);
+                templates.push(templateDirectory + '/' + item);
             }
         });
 
