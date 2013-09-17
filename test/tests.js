@@ -1,4 +1,4 @@
-/* globals test, ok, templatizer, templatizer_unaltered */
+/* globals test, ok, templatizer, templatizer_unaltered, templatizer_multiple_dirs */
 
 var data = {
     users: [{
@@ -52,6 +52,16 @@ test("Test calling templates with different context", function () {
     ok(users.indexOf(user_li) > -1);
     ok(users.indexOf(user_a) > -1);
     ok(user_li.indexOf(user_a) > -1);
+});
+
+test("Test multiple dirs", function () {
+    ok(templatizer_multiple_dirs.hasOwnProperty('test'));
+    ok(!templatizer.hasOwnProperty('test'));
+
+    ok(templatizer_multiple_dirs.otherfolder.hasOwnProperty('othertweet'));
+    ok(templatizer_multiple_dirs.otherfolder.hasOwnProperty('othertweet2'));
+    ok(templatizer.otherfolder.hasOwnProperty('othertweet'));
+    ok(!templatizer.otherfolder.hasOwnProperty('othertweet2'));
 });
 
 test("Test altered vs unaltered mixins", function () {

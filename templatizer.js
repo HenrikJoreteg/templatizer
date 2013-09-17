@@ -7,10 +7,14 @@ var _ = require('underscore');
 var fs = require('fs');
 
 
-module.exports = function (templateDirectory, outputFile, dontTransformMixins) {
+module.exports = function (templateDirectories, outputFile, dontTransformMixins) {
+    if (typeof templateDirectories === "string") {
+        templateDirectories = [templateDirectories];
+    }
     var parentObjName = 'exports'; // This is just to use in multiple places
     var folders = [];
     var templates = [];
+    var _readTemplates = [];
     var isWindows = process.platform === 'win32';
     var pathSep = path.sep || (isWindows ? '\\' : '/');
     var placesToLook = [
@@ -18,7 +22,7 @@ module.exports = function (templateDirectory, outputFile, dontTransformMixins) {
             __dirname + '/node_modules/jade/runtime.min.js',
             __dirname + '/jaderuntime.min.js'
         ];
-    var contents = walkdir.sync(templateDirectory);
+
     var jadeRuntime = fs.readFileSync(_.find(placesToLook, fs.existsSync)).toString();
     var output = [
         '(function () {',
@@ -29,18 +33,28 @@ module.exports = function (templateDirectory, outputFile, dontTransformMixins) {
         ''
     ].join('\n');
 
-    contents.forEach(function (file) {
-        var item = file.replace(templateDirectory, '').slice(1);
-        if (path.extname(item) === '' && path.basename(item).charAt(0) !== '.') {
-            folders.push(item);
-        } else if (path.extname(item) === '.jade') {
-            templates.push(item);
-        }
-    });
+    templateDirectories.forEach(function (templateDirectory) {
+        var contents = walkdir.sync(templateDirectory);
 
-    folders = _.sortBy(folders, function (folder) {
-        var arr = folder.split(pathSep);
-        return arr.length;
+        contents.forEach(function (file) {
+            var item = file.replace(templateDirectory, '').slice(1);
+            if (path.extname(item) === '' && path.basename(item).charAt(0) !== '.') {
+                if (folders.indexOf(item) === -1) folders.push(item);
+            } else if (path.extname(item) === '.jade') {
+                // Throw an err if we are about to override a template
+                if (_readTemplates.indexOf(item) > -1) {
+                    throw new Error(item + ' from ' + templateDirectory + '/' + item + ' already exists in ' + templates[_readTemplates.indexOf(item)]);
+                }
+                
+                _readTemplates.push(item);
+                templates.push(templateDirectory + '/' + item);
+            }
+        });
+
+        folders = _.sortBy(folders, function (folder) {
+            var arr = folder.split(pathSep);
+            return arr.length;
+        });
     });
 
     output += '\n// create our folder objects';
@@ -50,21 +64,24 @@ module.exports = function (templateDirectory, outputFile, dontTransformMixins) {
     });
     output += '\n';
 
-    templates.forEach(function (file) {
-        var name = path.basename(file, '.jade');
+    templates.forEach(function (item) {
+        var name = path.basename(item, '.jade');
         var dirString = function () {
-            var dirname = path.dirname(file);
-            var arr = dirname.split(pathSep);
+            var itemTemplateDir = _.find(templateDirectories, function (templateDirectory) {
+                return item.indexOf(templateDirectory + '/') === 0;
+            });
+            var dirname = path.dirname(item).replace(itemTemplateDir, '');
             if (dirname === '.') return name;
+            var arr = dirname.split(pathSep);
             arr.push(name);
-            return arr.join('.');
+            return _.compact(arr).join('.');
         }();
-        var fullPath = templateDirectory + '/' + file;
-        var template = beautify(jade.compile(fs.readFileSync(fullPath), {
+        var mixinOutput = '';
+        var template = beautify(jade.compile(fs.readFileSync(item, 'utf-8'), {
             client: true,
             compileDebug: false,
             pretty: false,
-            filename: fullPath
+            filename: item
         }).toString());
         var astResult = jadeAst.getMixins({
             template: template,
@@ -72,8 +89,8 @@ module.exports = function (templateDirectory, outputFile, dontTransformMixins) {
             dirString: dirString,
             parentObjName: parentObjName
         });
-        var mixinOutput = astResult.mixins;
 
+        mixinOutput = astResult.mixins;
         if (!dontTransformMixins) template = astResult.template;
 
         output += [
