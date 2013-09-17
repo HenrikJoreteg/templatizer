@@ -1,6 +1,6 @@
 {
     "name": "templatizer",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "author": "Henrik Joreteg <henrik@andyet.net>",
     "contributors": [ 
         {
@@ -28,7 +28,8 @@
         "url": "https://github.com/HenrikJoreteg/templatizer.git"
     },
     "scripts": {
-        "benchmark": "node benchmark/speedtest.js"
+        "benchmark": "node benchmark/speedtest.js",
+        "builddemo": "node benchmark/build-demo.js"
     },
     "keywords": [
         "templates", 

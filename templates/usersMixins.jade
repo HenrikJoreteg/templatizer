@@ -1,11 +1,13 @@
-mixin user_li(user)
-    li(data-user-id=user.id)
+mixin user_li(user, index)
+    li(data-user-id=user.id, data-user-index=index)
         span Before
-        mixin user_a(user)
+        mixin user_a(user, index)
 
-mixin user_a(user)
-    a(href=user.url) Within #{user.name}
+mixin user_a(user, index)
+    a(href=user.url, data-user-index=index) Within #{user.name}
 
 ul
+    - var i = 0
     each user in users
-        mixin user_li(user)
+        mixin user_li(user, i)
+        - i++
