@@ -1,4 +1,4 @@
-/* globals test, ok, templatizer, templatizer_unaltered */
+/* globals test, ok, templatizer, templatizer_unaltered, templatizer_multiple_dirs */
 
 var data = {
     users: [{
