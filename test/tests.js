@@ -18,12 +18,12 @@ var data = {
 
 test("Test mixins", function () {
     var users = templatizer.usersMixins({users: data.users});
-    var user_li = templatizer.usersMixins.user_li(data.users[0]);
-    var user_a = templatizer.usersMixins.user_a(data.users[0]);
+    var user_li = templatizer.usersMixins.user_li(data.users[0], 0);
+    var user_a = templatizer.usersMixins.user_a(data.users[0], 0);
     
     var _users = '<ul>';
     for (var i = 0, m = data.users.length; i < m; i++) {
-        _users += templatizer.usersMixins.user_li(data.users[i]);
+        _users += templatizer.usersMixins.user_li(data.users[i], i);
     }
     _users += '</ul>';
 

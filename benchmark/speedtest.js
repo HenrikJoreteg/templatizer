@@ -1,6 +1,4 @@
-var templatizer = require('../templatizer'),
-    path = require('path'),
-    colors = require('colors'),
+var colors = require('colors'),
     yetify = require('yetify'),
     fs = require('fs'),
     ich = require('./icanhaz');
@@ -26,8 +24,8 @@ var ITERATIONS = 100000;
 var i = ITERATIONS;
 
 // build our demo file
-templatizer(path.resolve(__dirname, '../templates'), path.resolve(__dirname, '../test/demo_output_no_mixins.js'), true);
-templatizer(path.resolve(__dirname, '../templates'), path.resolve(__dirname, '../demo_output.js'));
+require('./build-demo');
+
 console.log('\nSetting up templatizer'.bold);
 console.log('1.'.grey + ' built: demo_output.js, demo_output_mixins.js');
 console.log('2.'.grey + ' now reading in generated files');
