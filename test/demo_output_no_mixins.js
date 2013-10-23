@@ -6,12 +6,19 @@ var jade = exports.jade=function(exports){Array.isArray||(Array.isArray=function
 
 
 // create our folder objects
-exports.otherfolder = {};
-exports.otherfolder.deep2 = {};
-exports.otherfolder.deepnested = {};
+exports["otherfolder"] = {};
+exports["otherfolder"]["deep2"] = {};
+exports["otherfolder"]["deepnested"] = {};
+
+// 404.jade compiled template
+exports["404"] = function anonymous(locals) {
+    var buf = [];
+    buf.push('<div class="page-404">404!</div>');
+    return buf.join("");
+};
 
 // deeptweet.jade compiled template
-exports.otherfolder.deep2.deeptweet = function anonymous(locals) {
+exports["otherfolder"]["deep2"]["deeptweet"] = function anonymous(locals) {
     var buf = [];
     var locals_ = locals || {}, tweet = locals_.tweet;
     buf.push('<li class="tweet">' + jade.escape(null == (jade.interp = tweet) ? "" : jade.interp) + "</li>");
@@ -19,7 +26,7 @@ exports.otherfolder.deep2.deeptweet = function anonymous(locals) {
 };
 
 // deeptweet.jade compiled template
-exports.otherfolder.deepnested.deeptweet = function anonymous(locals) {
+exports["otherfolder"]["deepnested"]["deeptweet"] = function anonymous(locals) {
     var buf = [];
     var locals_ = locals || {}, tweet = locals_.tweet;
     buf.push('<li class="tweet">' + jade.escape(null == (jade.interp = tweet) ? "" : jade.interp) + "</li>");
@@ -27,7 +34,7 @@ exports.otherfolder.deepnested.deeptweet = function anonymous(locals) {
 };
 
 // othertweet.jade compiled template
-exports.otherfolder.othertweet = function anonymous(locals) {
+exports["otherfolder"]["othertweet"] = function anonymous(locals) {
     var buf = [];
     var locals_ = locals || {}, user = locals_.user;
     buf.push('<li class="tweet">' + jade.escape(null == (jade.interp = user) ? "" : jade.interp) + "</li>");
@@ -35,7 +42,7 @@ exports.otherfolder.othertweet = function anonymous(locals) {
 };
 
 // users.jade compiled template
-exports.users = function anonymous(locals) {
+exports["users"] = function anonymous(locals) {
     var buf = [];
     var locals_ = locals || {}, users = locals_.users;
     buf.push("<ul>");
@@ -60,7 +67,7 @@ exports.users = function anonymous(locals) {
 };
 
 // usersMixins.jade compiled template
-exports.usersMixins = function anonymous(locals) {
+exports["usersMixins"] = function anonymous(locals) {
     var buf = [];
     var locals_ = locals || {}, users = locals_.users;
     var user_li_mixin = function(user, index) {
@@ -110,7 +117,7 @@ exports.usersMixins = function anonymous(locals) {
 };
 
 // usersMixins.jade:user_li_mixin compiled template
-exports.usersMixins.user_li = function anonymous(user, index) {
+exports["usersMixins"]["user_li"] = function anonymous(user, index) {
     var block = this.block, attributes = this.attributes || {}, escaped = this.escaped || {}, buf = [];
     buf.push("<li" + jade.attrs({
         "data-user-id": user.id,
@@ -125,7 +132,7 @@ exports.usersMixins.user_li = function anonymous(user, index) {
 };
 
 // usersMixins.jade:user_a_mixin compiled template
-exports.usersMixins.user_a = function anonymous(user, index) {
+exports["usersMixins"]["user_a"] = function anonymous(user, index) {
     var block = this.block, attributes = this.attributes || {}, escaped = this.escaped || {}, buf = [];
     buf.push("<a" + jade.attrs({
         href: user.url,
@@ -138,7 +145,7 @@ exports.usersMixins.user_a = function anonymous(user, index) {
 };
 
 // userscomplex.jade compiled template
-exports.userscomplex = function anonymous(locals) {
+exports["userscomplex"] = function anonymous(locals) {
     var buf = [];
     var locals_ = locals || {}, users = locals_.users;
     buf.push("<ul>");
