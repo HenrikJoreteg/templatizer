@@ -70,3 +70,9 @@ test("Test altered vs unaltered mixins", function () {
 
     ok(users === _users);
 });
+
+test("Test for valid identifiers", function () {
+    var page404 = templatizer['404'];
+
+    ok(typeof page404 === 'function');
+});

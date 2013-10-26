@@ -60,7 +60,7 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
     output += '\n// create our folder objects';
     folders.forEach(function (folder) {
         var arr = folder.split(pathSep);
-        output += '\n' + parentObjName + '.' + arr.join('.') + ' = {};';
+        output += '\n' + parentObjName + '["' + arr.join('"]["') + '"] = {};';
     });
     output += '\n';
 
@@ -96,7 +96,7 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
         output += [
             '',
             '// ' + name + '.jade compiled template',
-            parentObjName + '.' + dirString + ' = ' + template + ';',
+            parentObjName + '["' + dirString.replace(/\./g, '"]["') + '"] = ' + template + ';',
             ''
         ].join('\n') + mixinOutput;
     });
