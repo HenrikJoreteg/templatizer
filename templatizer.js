@@ -5,6 +5,8 @@ var walkdir = require('walkdir');
 var path = require('path');
 var _ = require('underscore');
 var fs = require('fs');
+var uglify = require('uglify-js');
+
 
 
 module.exports = function (templateDirectories, outputFile, dontTransformMixins) {
@@ -77,12 +79,23 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
             return _.compact(arr).join('.');
         }();
         var mixinOutput = '';
-        var template = beautify(jade.compile(fs.readFileSync(item, 'utf-8'), {
+
+        //parse into AST
+        var ast = uglify.parse(jade.compile(fs.readFileSync(item, 'utf-8'), {
             client: true,
             compileDebug: false,
             pretty: false,
             filename: item
         }).toString());
+
+        //rename the function
+        ast.body[0].name.name=name;
+
+        //set up output
+        var stream = uglify.OutputStream();
+        ast.print(stream);
+
+        var template = beautify(stream.toString());
         var astResult = jadeAst.getMixins({
             template: template,
             templateName: name,
