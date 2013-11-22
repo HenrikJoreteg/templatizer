@@ -47,7 +47,7 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
                 }
                 
                 _readTemplates.push(item);
-                templates.push(templateDirectory + '/' + item);
+                templates.push(templateDirectory + pathSep + item);
             }
         });
 
@@ -63,12 +63,11 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
         output += '\n' + parentObjName + '["' + arr.join('"]["') + '"] = {};';
     });
     output += '\n';
-
     templates.forEach(function (item) {
         var name = path.basename(item, '.jade');
         var dirString = function () {
             var itemTemplateDir = _.find(templateDirectories, function (templateDirectory) {
-                return item.indexOf(templateDirectory + '/') === 0;
+                return item.indexOf(templateDirectory + pathSep) === 0;
             });
             var dirname = path.dirname(item).replace(itemTemplateDir, '');
             if (dirname === '.') return name;
