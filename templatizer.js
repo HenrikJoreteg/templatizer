@@ -37,7 +37,7 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
         var contents = walkdir.sync(templateDirectory);
 
         contents.forEach(function (file) {
-            var item = file.replace(templateDirectory, '').slice(1);
+            var item = path.basename(file);
             if (path.extname(item) === '' && path.basename(item).charAt(0) !== '.') {
                 if (folders.indexOf(item) === -1) folders.push(item);
             } else if (path.extname(item) === '.jade') {
