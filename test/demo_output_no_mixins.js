@@ -72,7 +72,7 @@ exports["otherfolder"]["nestedMixin"] = function anonymous(locals) {
 };
 
 // nestedMixin.jade:user_li_mixin compiled template
-exports["otherfolder.nestedMixin"]["user_li"] = function anonymous(user, index) {
+exports["otherfolder"]["nestedMixin"]["user_li"] = function anonymous(user, index) {
     var block = this.block, attributes = this.attributes || {}, escaped = this.escaped || {}, buf = [];
     buf.push("<li" + jade.attrs({
         "data-user-id": user.id,
