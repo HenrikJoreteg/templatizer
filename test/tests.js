@@ -76,3 +76,9 @@ test("Test for valid identifiers", function () {
 
     ok(typeof page404 === 'function');
 });
+
+test("Test for nested mixins", function () {
+    var nestedMixin = templatizer.otherfolder.nestedMixin;
+
+    ok(typeof nestedMixin.user_li === 'function');
+});
