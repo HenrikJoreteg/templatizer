@@ -82,6 +82,7 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
             pretty: false,
             filename: item
         }).toString());
+
         template = jadeAst.renameFunc(template, dirString);
 
         var astResult = jadeAst.getMixins({
@@ -93,6 +94,8 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
 
         mixinOutput = astResult.mixins;
         if (!dontTransformMixins) template = astResult.template;
+
+        template = jadeAst.simplifyTemplate(template);
 
         output += [
             '',
