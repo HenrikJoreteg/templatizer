@@ -35,6 +35,7 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
 
     templateDirectories.forEach(function (templateDirectory) {
         var contents = walkdir.sync(templateDirectory);
+        templateDirectory = templateDirectory.replace(/[\\\/]/g, pathSep);
 
         contents.forEach(function (file) {
             var item = file.replace(templateDirectory, '').slice(1);
