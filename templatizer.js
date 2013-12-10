@@ -71,9 +71,8 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
             });
             var dirname = path.dirname(item).replace(itemTemplateDir, '');
             if (dirname === '.') return name;
-            var arr = dirname.split(pathSep);
-            arr.push(name);
-            return _.compact(arr).join('.');
+            dirname += '.' + name;
+            return dirname.substring(1).replace(/\/|\\/g,'.');
         }();
         var mixinOutput = '';
         var template = beautify(jade.compile(fs.readFileSync(item, 'utf-8'), {
