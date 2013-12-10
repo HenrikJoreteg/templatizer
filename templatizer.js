@@ -17,6 +17,7 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
     var _readTemplates = [];
     var isWindows = process.platform === 'win32';
     var pathSep = path.sep || (isWindows ? '\\' : '/');
+    var pathSepRegExp = /\/|\\/g;
     var placesToLook = [
             __dirname + '/../jade/runtime.min.js',
             __dirname + '/node_modules/jade/runtime.min.js',
@@ -35,7 +36,7 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
 
     templateDirectories.forEach(function (templateDirectory) {
         var contents = walkdir.sync(templateDirectory);
-        templateDirectory = templateDirectory.replace(/[\\\/]/g, pathSep);
+        templateDirectory = templateDirectory.replace(pathSepRegExp, pathSep);
 
         contents.forEach(function (file) {
             var item = file.replace(templateDirectory, '').slice(1);
@@ -44,7 +45,7 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
             } else if (path.extname(item) === '.jade') {
                 // Throw an err if we are about to override a template
                 if (_readTemplates.indexOf(item) > -1) {
-                    throw new Error(item + ' from ' + templateDirectory + '/' + item + ' already exists in ' + templates[_readTemplates.indexOf(item)]);
+                    throw new Error(item + ' from ' + templateDirectory + pathSep + item + ' already exists in ' + templates[_readTemplates.indexOf(item)]);
                 }
                 
                 _readTemplates.push(item);
@@ -73,7 +74,7 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
             var dirname = path.dirname(item).replace(itemTemplateDir, '');
             if (dirname === '.') return name;
             dirname += '.' + name;
-            return dirname.substring(1).replace(/\/|\\/g,'.');
+            return dirname.substring(1).replace(pathSepRegExp, '.');
         }();
         var mixinOutput = '';
         var template = beautify(jade.compile(fs.readFileSync(item, 'utf-8'), {
@@ -96,7 +97,7 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
 
         output += [
             '',
-            '// ' + dirString.replace(/\./g, '/') + '.jade compiled template',
+            '// ' + dirString.replace(/\./g, pathSep) + '.jade compiled template',
             parentObjName + '["' + dirString.replace(/\./g, '"]["') + '"] = ' + template + ';',
             ''
         ].join('\n') + mixinOutput;
