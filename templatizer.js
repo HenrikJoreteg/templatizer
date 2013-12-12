@@ -34,9 +34,12 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
         ''
     ].join('\n');
 
+    templateDirectories = _.map(templateDirectories, function (templateDirectory) {
+        return templateDirectory.replace(pathSepRegExp, pathSep);
+    });
+
     templateDirectories.forEach(function (templateDirectory) {
         var contents = walkdir.sync(templateDirectory);
-        templateDirectory = templateDirectory.replace(pathSepRegExp, pathSep);
 
         contents.forEach(function (file) {
             var item = file.replace(templateDirectory, '').slice(1);
