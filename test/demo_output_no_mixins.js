@@ -11,9 +11,15 @@ exports["otherfolder"]["deep2"] = {};
 exports["otherfolder"]["deepnested"] = {};
 
 // 404.jade compiled template
-exports["404"] = function tmpl_404(locals) {
+exports["404"] = function tmpl_404() {
+    return '<div class="page-404">404!</div>';
+};
+
+// 404withVars.jade compiled template
+exports["404withVars"] = function tmpl_404withVars(locals) {
     var buf = [];
-    buf.push('<div class="page-404">404!</div>');
+    var locals_ = locals || {}, content = locals_.content;
+    buf.push('<div class="page-404">' + jade.escape((jade.interp = content || '404') == null ? '' : jade.interp) + '!</div>');
     return buf.join('');
 };
 

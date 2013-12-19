@@ -11,9 +11,15 @@ exports["otherfolder"]["deep2"] = {};
 exports["otherfolder"]["deepnested"] = {};
 
 // 404.jade compiled template
-exports["404"] = function tmpl_404(locals) {
+exports["404"] = function tmpl_404() {
+    return '<div class="page-404">404!</div>';
+};
+
+// 404withVars.jade compiled template
+exports["404withVars"] = function tmpl_404withVars(locals) {
     var buf = [];
-    buf.push('<div class="page-404">404!</div>');
+    var locals_ = locals || {}, content = locals_.content;
+    buf.push('<div class="page-404">' + jade.escape((jade.interp = content || '404') == null ? '' : jade.interp) + '!</div>');
     return buf.join('');
 };
 
@@ -37,11 +43,11 @@ exports["otherfolder"]["deepnested"]["deeptweet"] = function tmpl_otherfolder_de
 exports["otherfolder"]["nestedMixin"] = function tmpl_otherfolder_nestedMixin(locals) {
     var buf = [];
     var locals_ = locals || {}, users = locals_.users;
-    buf.push("<ul>");
+    buf.push('<ul>');
     var i = 0;
-    (function() {
+    (function () {
         var $$obj = users;
-        if ("number" == typeof $$obj.length) {
+        if ('number' == typeof $$obj.length) {
             for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
                 var user = $$obj[$index];
                 buf.push(exports.otherfolder.nestedMixin.user_li(user, i));
@@ -56,9 +62,9 @@ exports["otherfolder"]["nestedMixin"] = function tmpl_otherfolder_nestedMixin(lo
                 i++;
             }
         }
-    }).call(this);
-    buf.push("</ul>");
-    return buf.join("");
+    }.call(this));
+    buf.push('</ul>');
+    return buf.join('');
 };
 
 // otherfolder/nestedMixin.jade:user_li_mixin compiled template
@@ -111,11 +117,11 @@ exports["users"] = function tmpl_users(locals) {
 exports["usersMixins"] = function tmpl_usersMixins(locals) {
     var buf = [];
     var locals_ = locals || {}, users = locals_.users;
-    buf.push("<ul>");
+    buf.push('<ul>');
     var i = 0;
-    (function() {
+    (function () {
         var $$obj = users;
-        if ("number" == typeof $$obj.length) {
+        if ('number' == typeof $$obj.length) {
             for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
                 var user = $$obj[$index];
                 buf.push(exports.usersMixins.user_li(user, i));
@@ -130,9 +136,9 @@ exports["usersMixins"] = function tmpl_usersMixins(locals) {
                 i++;
             }
         }
-    }).call(this);
-    buf.push("</ul>");
-    return buf.join("");
+    }.call(this));
+    buf.push('</ul>');
+    return buf.join('');
 };
 
 // usersMixins.jade:user_li_mixin compiled template

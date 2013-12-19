@@ -82,3 +82,11 @@ test("Test for nested mixins", function () {
 
     ok(typeof nestedMixin.user_li === 'function');
 });
+
+test("Test that simplified templates have the same content: Issue #31", function () {
+    var regular = templatizer['404withVars'],
+        simple = templatizer['404'];
+
+    ok(regular() === simple());
+    ok(regular({content: 'test'}) !== simple());
+});
