@@ -88,6 +88,10 @@ This is helpful as it allows you to call `users()` to create your list and then 
 
 Check out the `demo_output.js` file for... err... demo output built from the `templates` directory in this project.
 
+## Changelog
+
+- v0.2.9 - Adding path normalize to avoid issues if passing in paths like `/thing/../otherfolder`
+
 ## License
 
 MIT

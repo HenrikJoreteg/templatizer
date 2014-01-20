@@ -1,6 +1,6 @@
 {
     "name": "templatizer",
-    "version": "0.2.8",
+    "version": "0.2.9",
     "author": "Henrik Joreteg <henrik@andyet.net>",
     "contributors": [ 
         {
@@ -29,7 +29,8 @@
     },
     "scripts": {
         "benchmark": "node benchmark/speedtest.js",
-        "builddemo": "node benchmark/build-demo.js"
+        "builddemo": "node benchmark/build-demo.js",
+        "test": "npm run builddemo && open ./test/index.html"
     },
     "keywords": [
         "templates", 
