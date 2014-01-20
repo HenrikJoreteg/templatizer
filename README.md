@@ -90,7 +90,7 @@ Check out the `demo_output.js` file for... err... demo output built from the `te
 
 ## Changelog
 
-- v0.2.9 - Adding path normalize to avoid issues if passing in paths like `/thing/../otherfolder`
+- v0.2.9 [diff](https://github.com/henrikjoreteg/templatizer/compare/v0.2.8...v0.2.9) - Adding path normalize to avoid issues if passing in paths like `/thing/../otherfolder`.
 
 ## License
 
