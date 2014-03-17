@@ -19,18 +19,17 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
     var pathSep = path.sep || (isWindows ? '\\' : '/');
     var pathSepRegExp = /\/|\\/g;
     var placesToLook = [
-            __dirname + '/../jade/runtime.min.js',
-            __dirname + '/node_modules/jade/runtime.min.js',
+            __dirname + '/node_modules/jade/runtime.js',
             __dirname + '/jaderuntime.min.js'
         ];
 
     var jadeRuntime = fs.readFileSync(_.find(placesToLook, fs.existsSync)).toString();
     var output = [
+        jadeRuntime,
         '(function () {',
         'var root = this, ' + parentObjName + ' = {};',
         '',
         '// The jade runtime:',
-        'var jade = ' + parentObjName + '.' + jadeRuntime,
         ''
     ].join('\n');
 
@@ -80,8 +79,7 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
             return dirname.substring(1).replace(pathSepRegExp, '.');
         }();
         var mixinOutput = '';
-        var template = beautify(jade.compile(fs.readFileSync(item, 'utf-8'), {
-            client: true,
+        var template = beautify(jade.compileClient(fs.readFileSync(item, 'utf-8'), {
             compileDebug: false,
             pretty: false,
             filename: item
