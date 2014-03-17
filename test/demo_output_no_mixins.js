@@ -297,7 +297,7 @@ exports["otherfolder"]["nestedMixin"] = function tmpl_otherfolder_nestedMixin(lo
 
 // otherfolder/nestedMixin.jade:user_li compiled template
 exports["otherfolder"]["nestedMixin"]["user_li"] = function tmpl_otherfolder_nestedMixin_user_li(user, index) {
-    var block = this && this.block, attributes = this && this.attributes || {}, buf = [];
+    var block = this && this.block, attributes = this && this.attributes || {}, buf = [], jade_interp;
     buf.push("<li" + jade.attr("data-user-id", user.id, true, false) + jade.attr("data-user-index", index, true, false) + ">test</li>");
     return buf.join("");
 };
@@ -387,7 +387,7 @@ exports["usersMixins"] = function tmpl_usersMixins(locals) {
 
 // usersMixins.jade:user_li compiled template
 exports["usersMixins"]["user_li"] = function tmpl_usersMixins_user_li(user, index) {
-    var block = this && this.block, attributes = this && this.attributes || {}, buf = [];
+    var block = this && this.block, attributes = this && this.attributes || {}, buf = [], jade_interp;
     buf.push("<li" + jade.attr("data-user-id", user.id, true, false) + jade.attr("data-user-index", index, true, false) + "><span>Before</span>");
     buf.push(exports.usersMixins.user_a(user, index));
     buf.push("</li>");
@@ -396,7 +396,7 @@ exports["usersMixins"]["user_li"] = function tmpl_usersMixins_user_li(user, inde
 
 // usersMixins.jade:user_a compiled template
 exports["usersMixins"]["user_a"] = function tmpl_usersMixins_user_a(user, index) {
-    var block = this && this.block, attributes = this && this.attributes || {}, buf = [];
+    var block = this && this.block, attributes = this && this.attributes || {}, buf = [], jade_interp;
     buf.push("<a" + jade.attr("href", user.url, true, false) + jade.attr("data-user-index", index, true, false) + ">Within " + jade.escape((jade_interp = user.name) == null ? "" : jade_interp) + "</a>");
     return buf.join("");
 };
