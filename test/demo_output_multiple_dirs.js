@@ -219,12 +219,8 @@ exports["otherfolder"]["deep2"] = {};
 exports["otherfolder"]["deepnested"] = {};
 
 // 404.jade compiled template
-exports["404"] = function tmpl_404(locals) {
-    var buf = [];
-    var jade_mixins = {};
-    var jade_interp;
-    buf.push('<div class="page-404">404!</div>');
-    return buf.join('');
+exports["404"] = function tmpl_404() {
+    return '<div class="page-404">404!</div>';
 };
 
 // 404withVars.jade compiled template
@@ -421,21 +417,13 @@ exports["userscomplex"] = function tmpl_userscomplex(locals) {
 };
 
 // otherfolder/othertweet2.jade compiled template
-exports["otherfolder"]["othertweet2"] = function tmpl_otherfolder_othertweet2(locals) {
-    var buf = [];
-    var jade_mixins = {};
-    var jade_interp;
-    buf.push('<p>test</p>');
-    return buf.join('');
+exports["otherfolder"]["othertweet2"] = function tmpl_otherfolder_othertweet2() {
+    return '<p>test</p>';
 };
 
 // test.jade compiled template
-exports["test"] = function tmpl_test(locals) {
-    var buf = [];
-    var jade_mixins = {};
-    var jade_interp;
-    buf.push('<p>test</p>');
-    return buf.join('');
+exports["test"] = function tmpl_test() {
+    return '<p>test</p>';
 };
 
 

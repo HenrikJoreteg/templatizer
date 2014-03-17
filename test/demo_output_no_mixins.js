@@ -219,12 +219,8 @@ exports["otherfolder"]["deep2"] = {};
 exports["otherfolder"]["deepnested"] = {};
 
 // 404.jade compiled template
-exports["404"] = function tmpl_404(locals) {
-    var buf = [];
-    var jade_mixins = {};
-    var jade_interp;
-    buf.push('<div class="page-404">404!</div>');
-    return buf.join('');
+exports["404"] = function tmpl_404() {
+    return '<div class="page-404">404!</div>';
 };
 
 // 404withVars.jade compiled template
