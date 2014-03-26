@@ -34,11 +34,13 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins,
         ''
     ].join('\n');
 
-    if(!options) options = {
+    var compileOptions = {
       client: true,
       compileDebug: false,
       pretty: false
     };
+
+    if(options) _.extend(compileOptions, options);
 
     templateDirectories = _.map(templateDirectories, function (templateDirectory) {
         return templateDirectory.replace(pathSepRegExp, pathSep);
@@ -87,9 +89,9 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins,
         }();
         var mixinOutput = '';
 
-        options.filename = item;
+        compileOptions.filename = item;
 
-        var template = beautify(jade.compile(fs.readFileSync(item, 'utf-8'), options).toString());
+        var template = beautify(jade.compile(fs.readFileSync(item, 'utf-8'), compileOptions).toString());
 
         template = jadeAst.renameFunc(template, dirString);
 
