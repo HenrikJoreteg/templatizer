@@ -22,7 +22,7 @@ var templatizer = require('templatizer');
 
 // pass in the template directory and what you want to 
 // save the output file as. That's it!
-templatizer(__dirname + '/templates', __dirname + '/demo_output.js');
+templatizer(__dirname + '/templates', __dirname + '/demo_output.js', options);
 ```
 
 So a folder like this
@@ -57,6 +57,10 @@ exports.myfolder.nestedTemplate = function () {} // the template function
 ```
 
 The awesome thing is... there are no external dependencies because they're just functions at this point. Crazy fast, SO MUCH WIN!!!!
+
+### Jade Options
+
+Use `options.jade` to set options for when templatizer calls `jade.compile(file, options.jade)`.
 
 ### Mixin Support
 

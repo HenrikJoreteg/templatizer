@@ -1,4 +1,4 @@
-/* globals test, ok, templatizer, templatizer_unaltered, templatizer_multiple_dirs */
+/* globals test, ok, templatizer, templatizer_unaltered, templatizer_multiple_dirs, templatizer_globals */
 
 var data = {
     users: [{
@@ -89,4 +89,11 @@ test("Test that simplified templates have the same content: Issue #31", function
 
     ok(regular() === simple());
     ok(regular({content: 'test'}) !== simple());
+});
+
+test("Test that templates work with jade global option", function () {
+    var users = templatizer.users,
+        underscoreUsers = templatizer.underscoreUsers;
+
+    ok(users({users: data.users}) === underscoreUsers({users: data.users}));
 });

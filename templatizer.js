@@ -7,7 +7,14 @@ var _ = require('underscore');
 var fs = require('fs');
 
 
-module.exports = function (templateDirectories, outputFile, dontTransformMixins) {
+module.exports = function (templateDirectories, outputFile, options) {
+    options || (options = {});
+
+    _.defaults(options, {
+        dontTransformMixins: false,
+        jade: {}
+    });
+
     if (typeof templateDirectories === "string") {
         templateDirectories = [templateDirectories];
     }
@@ -32,6 +39,13 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
         '// The jade runtime:',
         ''
     ].join('\n');
+
+    var jadeCompileOptions = {
+        client: true,
+        compileDebug: false,
+        pretty: false
+    };
+    _.extend(jadeCompileOptions, options.jade);
 
     templateDirectories = _.map(templateDirectories, function (templateDirectory) {
         return templateDirectory.replace(pathSepRegExp, pathSep);
@@ -79,11 +93,9 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
             return dirname.substring(1).replace(pathSepRegExp, '.');
         }();
         var mixinOutput = '';
-        var template = beautify(jade.compileClient(fs.readFileSync(item, 'utf-8'), {
-            compileDebug: false,
-            pretty: false,
-            filename: item
-        }).toString());
+
+        jadeCompileOptions.filename = item;
+        var template = beautify(jade.compileClient(fs.readFileSync(item, 'utf-8'), jadeCompileOptions).toString());
 
         template = jadeAst.renameFunc(template, dirString);
 
@@ -95,7 +107,7 @@ module.exports = function (templateDirectories, outputFile, dontTransformMixins)
         });
 
         mixinOutput = astResult.mixins;
-        if (!dontTransformMixins) template = astResult.template;
+        if (!options.dontTransformMixins) template = astResult.template;
 
         template = jadeAst.simplifyTemplate(template);
 

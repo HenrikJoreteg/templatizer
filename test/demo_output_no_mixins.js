@@ -1,4 +1,4 @@
-!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.jade=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.jade=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -178,7 +178,7 @@ exports.rethrow = function rethrow(err, filename, lineno, str){
     throw err;
   }
   try {
-    str =  str || require('fs').readFileSync(filename, 'utf8')
+    str =  str || _dereq_('fs').readFileSync(filename, 'utf8')
   } catch (ex) {
     rethrow(err, null, lineno)
   }
@@ -203,7 +203,7 @@ exports.rethrow = function rethrow(err, filename, lineno, str){
   throw err;
 };
 
-},{"fs":2}],2:[function(require,module,exports){
+},{"fs":2}],2:[function(_dereq_,module,exports){
 
 },{}]},{},[1])
 (1)
@@ -314,6 +314,35 @@ exports["otherfolder"]["othertweet"] = function tmpl_otherfolder_othertweet(loca
     return buf.join('');
 };
 
+// underscoreUsers.jade compiled template
+exports["underscoreUsers"] = function tmpl_underscoreUsers(locals) {
+    var buf = [];
+    var jade_mixins = {};
+    var jade_interp;
+    var locals_for_with = locals || {};
+    (function (users, _) {
+        buf.push('<ul>');
+        (function () {
+            var $$obj = users;
+            if ('number' == typeof $$obj.length) {
+                for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
+                    var user = $$obj[$index];
+                    buf.push('<li>' + jade.escape((jade_interp = _.isObject(user) && _.isString(user.name) ? user.name : '') == null ? '' : jade_interp) + '</li>');
+                }
+            } else {
+                var $$l = 0;
+                for (var $index in $$obj) {
+                    $$l++;
+                    var user = $$obj[$index];
+                    buf.push('<li>' + jade.escape((jade_interp = _.isObject(user) && _.isString(user.name) ? user.name : '') == null ? '' : jade_interp) + '</li>');
+                }
+            }
+        }.call(this));
+        buf.push('</ul>');
+    }('users' in locals_for_with ? locals_for_with.users : typeof users !== 'undefined' ? users : undefined, '_' in locals_for_with ? locals_for_with._ : typeof _ !== 'undefined' ? _ : undefined));
+    return buf.join('');
+};
+
 // users.jade compiled template
 exports["users"] = function tmpl_users(locals) {
     var buf = [];
@@ -327,14 +356,14 @@ exports["users"] = function tmpl_users(locals) {
             if ('number' == typeof $$obj.length) {
                 for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
                     var user = $$obj[$index];
-                    buf.push('<li>' + jade.escape(null == (jade_interp = user) ? '' : jade_interp) + '</li>');
+                    buf.push('<li>' + jade.escape(null == (jade_interp = user.name) ? '' : jade_interp) + '</li>');
                 }
             } else {
                 var $$l = 0;
                 for (var $index in $$obj) {
                     $$l++;
                     var user = $$obj[$index];
-                    buf.push('<li>' + jade.escape(null == (jade_interp = user) ? '' : jade_interp) + '</li>');
+                    buf.push('<li>' + jade.escape(null == (jade_interp = user.name) ? '' : jade_interp) + '</li>');
                 }
             }
         }.call(this));

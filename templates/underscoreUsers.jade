@@ -1,0 +1,3 @@
+ul
+    each user in users
+        li #{_.isObject(user) && _.isString(user.name) ? user.name : ''}
