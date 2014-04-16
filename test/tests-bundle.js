@@ -1,3 +1,5 @@
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function (global){
 //jade runtime
 (function () {
 var exports; //work in browserify
@@ -474,16 +476,6 @@ exports["userscomplex"] = function tmpl_userscomplex(locals) {
     return buf.join('');
 };
 
-// otherfolder/othertweet2.jade compiled template
-exports["otherfolder"]["othertweet2"] = function tmpl_otherfolder_othertweet2() {
-    return '<p>test</p>';
-};
-
-// test.jade compiled template
-exports["test"] = function tmpl_test() {
-    return '<p>test</p>';
-};
-
 
 // attach to window or export with commonJS
 if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
@@ -495,3 +487,38 @@ if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
 }
 
 })();
+}).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],2:[function(require,module,exports){
+/* globals test, ok */
+
+var t = require('../demo_output.js');
+var data = {
+    users: [{
+        name: 'larry',
+        url: 'http://andyet.com',
+        id: 1
+    }, {
+        name: 'curly',
+        url: 'http://andbang.com',
+        id: 2
+    }, {
+        name: 'moe',
+        url: 'http://talky.io',
+        id: 3
+    }]
+};
+
+module.exports = {
+    start: function () {
+        test("Test that templates work when browserified", function () {
+            var users = t.users,
+                withLocals = t.usersLocals;
+
+            ok(users({users: data.users}) === withLocals({users: data.users}));
+        });
+    }
+};
+
+module.exports.start();
+
+},{"../demo_output.js":1}]},{},[2])

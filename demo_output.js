@@ -212,8 +212,10 @@ exports.rethrow = function rethrow(err, filename, lineno, str){
 (1)
 });
 })();
+
 (function () {
 var root = this, exports = {};
+
 // create our folder objects
 exports["otherfolder"] = {};
 exports["otherfolder"]["deep2"] = {};
@@ -366,6 +368,32 @@ exports["users"] = function tmpl_users(locals) {
         }.call(this));
         buf.push('</ul>');
     }('users' in locals_for_with ? locals_for_with.users : typeof users !== 'undefined' ? users : undefined));
+    return buf.join('');
+};
+
+// usersLocals.jade compiled template
+exports["usersLocals"] = function tmpl_usersLocals(locals) {
+    var buf = [];
+    var jade_mixins = {};
+    var jade_interp;
+    buf.push('<ul>');
+    (function () {
+        var $$obj = locals.users;
+        if ('number' == typeof $$obj.length) {
+            for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
+                var user = $$obj[$index];
+                buf.push('<li>' + jade.escape(null == (jade_interp = user.name) ? '' : jade_interp) + '</li>');
+            }
+        } else {
+            var $$l = 0;
+            for (var $index in $$obj) {
+                $$l++;
+                var user = $$obj[$index];
+                buf.push('<li>' + jade.escape(null == (jade_interp = user.name) ? '' : jade_interp) + '</li>');
+            }
+        }
+    }.call(this));
+    buf.push('</ul>');
     return buf.join('');
 };
 
