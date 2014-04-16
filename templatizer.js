@@ -109,8 +109,11 @@ module.exports = function (templateDirectories, outputFile, options) {
             parentObjName: parentObjName
         });
 
-        mixinOutput = astResult.mixins;
-        if (!options.dontTransformMixins) template = astResult.template;
+        
+        if (!options.dontTransformMixins) {
+            mixinOutput = astResult.mixins;
+            template = astResult.template;
+        }
 
         template = jadeAst.simplifyTemplate(template);
 
