@@ -37,8 +37,10 @@ module.exports = function (templateDirectories, outputFile, options) {
         'var exports; //work in browserify',
         jadeRuntime,
         '})();',
+        '',
         '(function () {',
         'var root = this, ' + parentObjName + ' = {};',
+        ''
     ].join('\n');
 
     var jadeCompileOptions = {
