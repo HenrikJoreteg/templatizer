@@ -32,12 +32,13 @@ module.exports = function (templateDirectories, outputFile, options) {
 
     var jadeRuntime = fs.readFileSync(_.find(placesToLook, fs.existsSync)).toString();
     var output = [
+        '//jade runtime',
+        '(function () {',
+        'var exports; //work in browserify',
         jadeRuntime,
+        '})();',
         '(function () {',
         'var root = this, ' + parentObjName + ' = {};',
-        '',
-        '// The jade runtime:',
-        ''
     ].join('\n');
 
     var jadeCompileOptions = {
