@@ -58,9 +58,22 @@ exports.myfolder.nestedTemplate = function () {} // the template function
 
 The awesome thing is... there are no external dependencies because they're just functions at this point. Crazy fast, SO MUCH WIN!!!!
 
-### Jade Options
+### Options
 
-Use `options.jade` to set options for when templatizer calls `jade.compile(file, options.jade)`.
+The third parameter passed to `templatizer` is an options object.
+
+Currently the only available option is `jade`, which is an object which will be passed directly to `jade.compile()`. See the [Jade API documentation](http://jade-lang.com/api/) for what options are available.
+
+Here's an example where we set the Jade `compileDebug` option to `true`.
+
+```js
+templatizer(templatesDir, outputFile, {
+    // Options
+    jade: {
+        compileDebug: true
+    }
+});
+```
 
 ### Mixin Support
 
