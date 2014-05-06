@@ -55,9 +55,11 @@ module.exports = function (templateDirectories, outputFile, options) {
     });
 
     templateDirectories.forEach(function (templateDirectory) {
-        var contents = walkdir.sync(templateDirectory);
+        if (!fs.existsSync(templateDirectory)) {
+            throw new Error('Template directory ' + templateDirectory + ' does not exist.');
+        }
 
-        contents.forEach(function (file) {
+        walkdir.sync(templateDirectory).forEach(function (file) {
             var item = file.replace(path.resolve(templateDirectory), '').slice(1);
             if (path.extname(item) === '' && path.basename(item).charAt(0) !== '.') {
                 if (folders.indexOf(item) === -1) folders.push(item);
