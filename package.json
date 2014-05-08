@@ -1,7 +1,7 @@
 {
   "name": "templatizer",
   "description": "Simple solution for compiling jade templates into vanilla JS functions for blazin' fast client-side use.",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "author": "Henrik Joreteg <henrik@andyet.net>",
   "bugs": "https://github.com/HenrikJoreteg/templatizer/issues",
   "contributors": [
@@ -42,9 +42,10 @@
     "url": "https://github.com/HenrikJoreteg/templatizer.git"
   },
   "scripts": {
+    "runtime": "cp node_modules/jade/lib/runtime.js jaderuntime.js",
     "benchmark": "node benchmark/speedtest.js",
-    "builddemo": "node benchmark/build-demo.js",
+    "build": "npm run runtime && node benchmark/build-demo.js",
     "browserify": "./node_modules/.bin/browserify test/browserify-test.js > test/tests-bundle.js",
-    "test": "npm run builddemo && npm run browserify && open ./test/index.html  && open ./test/browserify.html"
+    "test": "npm run build && npm run browserify && open ./test/index.html  && open ./test/browserify.html"
   }
 }

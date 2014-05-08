@@ -5,6 +5,7 @@ var walkdir = require('walkdir');
 var path = require('path');
 var _ = require('underscore');
 var fs = require('fs');
+var uglifyjs = require('uglify-js');
 
 
 module.exports = function (templateDirectories, outputFile, options) {
@@ -18,30 +19,25 @@ module.exports = function (templateDirectories, outputFile, options) {
     if (typeof templateDirectories === "string") {
         templateDirectories = [templateDirectories];
     }
-    var parentObjName = 'exports'; // This is just to use in multiple places
+    var parentObjName = 'templatizer';
     var folders = [];
     var templates = [];
     var _readTemplates = [];
     var isWindows = process.platform === 'win32';
     var pathSep = path.sep || (isWindows ? '\\' : '/');
     var pathSepRegExp = /\/|\\/g;
-    var placesToLook = [
-            __dirname + '/node_modules/jade/runtime.js',
-            __dirname + '/jaderuntime.min.js'
-        ];
 
+    // Find jade runtime and create minified code
+    // where it is assigned to the variable jade
+    var placesToLook = [
+        __dirname + '/node_modules/jade/lib/runtim.js',
+        __dirname + '/jaderuntime.js'
+    ];
     var jadeRuntime = fs.readFileSync(_.find(placesToLook, fs.existsSync)).toString();
-    var output = [
-        '//jade runtime',
-        '(function () {',
-        'var exports; //work in browserify',
-        jadeRuntime,
-        '})();',
-        '',
-        '(function () {',
-        'var root = this, ' + parentObjName + ' = {};',
-        ''
-    ].join('\n');
+    var wrappedJade = uglifyjs.minify('var jade = (function(){var exports={};' + jadeRuntime + 'return exports;})();', {fromString: true}).code;
+
+    var outputTemplate = fs.readFileSync(__dirname + '/output_template.js').toString();
+    var output = '';
 
     var jadeCompileOptions = {
         client: true,
@@ -127,21 +123,12 @@ module.exports = function (templateDirectories, outputFile, options) {
         ].join('\n') + mixinOutput;
     });
 
-    output += [
-        '\n',
-        '// attach to window or export with commonJS',
-        'if (typeof module !== "undefined" && typeof module.exports !== "undefined") {',
-        '    module.exports = ' + parentObjName + ';',
-        '} else if (typeof define === "function" && define.amd) {',
-        '    define(' + parentObjName + ');',
-        '} else {',
-        '    root.templatizer = ' + parentObjName + ';',
-        '}',
-        '',
-        '})();'
-    ].join('\n');
+    var indentOutput = output.split('\n').map(function (l) { return l ? '    ' + l : l; }).join('\n');
+    var finalOutput = outputTemplate
+        .replace('{{jade}}', wrappedJade)
+        .replace('{{code}}', indentOutput);
 
-    if (outputFile) fs.writeFileSync(outputFile, output);
+    if (outputFile) fs.writeFileSync(outputFile, finalOutput);
 
-    return output;
+    return finalOutput;
 };
