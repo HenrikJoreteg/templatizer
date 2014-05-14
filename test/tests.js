@@ -97,3 +97,14 @@ test("Test that templates work with jade global option", function () {
 
     ok(users({users: data.users}) === underscoreUsers({users: data.users}));
 });
+
+test("Blocks", function () {
+    var unalteredBlock = templatizer_unaltered.mixinsWithBlocks();
+    var withBlock = templatizer.mixinsWithBlocks();
+    var withoutBlock = templatizer.mixinsWithoutBlocks();
+    var unalteredWithoutBlock = templatizer_unaltered.mixinsWithoutBlocks();
+
+    ok(unalteredBlock === withBlock);
+    ok(unalteredWithoutBlock === withoutBlock);
+    ok(withBlock === withoutBlock);
+});

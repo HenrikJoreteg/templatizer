@@ -3,6 +3,9 @@ var colors = require('colors'),
     fs = require('fs'),
     ich = require('./icanhaz');
 
+// satisfy jshint
+colors;
+
 // test setup
 var data = {users: ['larry', 'curly', 'moe']};
 var complexData = {

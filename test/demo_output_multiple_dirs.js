@@ -43,9 +43,10 @@
     };
 
     // mixins.jade:test compiled template
-    templatizer["mixins"]["test"] = function(user, index) {
-        var block = this && this.block, attributes = this && this.attributes || {};
+    templatizer["mixins"]["test"] = function tmpl_mixins_test(user, index) {
+        var block = this && this.block, attributes = this && this.attributes || {}, buf = [];
         buf.push("<li>test</li>");
+        return buf.join("");
     };
 
     // mixinsWithBlocks.jade compiled template
@@ -53,20 +54,21 @@
         var buf = [];
         var jade_mixins = {};
         var jade_interp;
-        jade_mixins["MyModal"].call({
-            block: function() {
+        buf.push(templatizer["mixinsWithBlocks"]["MyModal"].call({
+            block: function(buf) {
                 buf.push("<p>some body text</p>");
             }
-        }, "foo");
+        }, "foo"));
         return buf.join("");
     };
 
     // mixinsWithBlocks.jade:MyModal compiled template
-    templatizer["mixinsWithBlocks"]["MyModal"] = function(title) {
-        var block = this && this.block, attributes = this && this.attributes || {};
+    templatizer["mixinsWithBlocks"]["MyModal"] = function tmpl_mixinsWithBlocks_MyModal(title) {
+        var block = this && this.block, attributes = this && this.attributes || {}, buf = [];
         buf.push("<h1>" + jade.escape(null == (jade_interp = title) ? "" : jade_interp) + '</h1><div class="body">');
-        block && block();
+        block && block(buf);
         buf.push("</div>");
+        return buf.join("");
     };
 
     // mixinsWithoutBlocks.jade compiled template
@@ -74,14 +76,15 @@
         var buf = [];
         var jade_mixins = {};
         var jade_interp;
-        buf.push(templatizer["mixinsWithoutBlocks"]["MyModal"]());
+        buf.push(templatizer["mixinsWithoutBlocks"]["MyModal"]("foo"));
         return buf.join("");
     };
 
     // mixinsWithoutBlocks.jade:MyModal compiled template
-    templatizer["mixinsWithoutBlocks"]["MyModal"] = function(title) {
-        var block = this && this.block, attributes = this && this.attributes || {};
+    templatizer["mixinsWithoutBlocks"]["MyModal"] = function tmpl_mixinsWithoutBlocks_MyModal(title) {
+        var block = this && this.block, attributes = this && this.attributes || {}, buf = [];
         buf.push("<h1>" + jade.escape(null == (jade_interp = title) ? "" : jade_interp) + '</h1><div class="body"><p>some body text</p></div>');
+        return buf.join("");
     };
 
     // otherfolder/deep2/deeptweet.jade compiled template
@@ -141,9 +144,10 @@
     };
 
     // otherfolder/nestedMixin.jade:user_li compiled template
-    templatizer["otherfolder"]["nestedMixin"]["user_li"] = function(user, index) {
-        var block = this && this.block, attributes = this && this.attributes || {};
+    templatizer["otherfolder"]["nestedMixin"]["user_li"] = function tmpl_otherfolder_nestedMixin_user_li(user, index) {
+        var block = this && this.block, attributes = this && this.attributes || {}, buf = [];
         buf.push("<li" + jade.attr("data-user-id", user.id, true, false) + jade.attr("data-user-index", index, true, false) + ">test</li>");
+        return buf.join("");
     };
 
     // otherfolder/othertweet.jade compiled template
@@ -275,18 +279,20 @@
     };
 
     // usersMixins.jade:user_li compiled template
-    templatizer["usersMixins"]["user_li"] = function(user, index) {
-        var block = this && this.block, attributes = this && this.attributes || {};
+    templatizer["usersMixins"]["user_li"] = function tmpl_usersMixins_user_li(user, index) {
+        var block = this && this.block, attributes = this && this.attributes || {}, buf = [];
         buf.push("<li" + jade.attr("data-user-id", user.id, true, false) + jade.attr("data-user-index", index, true, false) + "><span>Before</span>");
         buf.push(templatizer["usersMixins"]["user_a"](user, index));
         buf.push("</li>");
+        return buf.join("");
     };
 
 
     // usersMixins.jade:user_a compiled template
-    templatizer["usersMixins"]["user_a"] = function(user, index) {
-        var block = this && this.block, attributes = this && this.attributes || {};
+    templatizer["usersMixins"]["user_a"] = function tmpl_usersMixins_user_a(user, index) {
+        var block = this && this.block, attributes = this && this.attributes || {}, buf = [];
         buf.push("<a" + jade.attr("href", user.url, true, false) + jade.attr("data-user-index", index, true, false) + ">Within " + jade.escape((jade_interp = user.name) == null ? "" : jade_interp) + "</a>");
+        return buf.join("");
     };
 
     // userscomplex.jade compiled template

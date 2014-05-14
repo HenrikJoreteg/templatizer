@@ -7,7 +7,7 @@ var _ = require('underscore');
 var fs = require('fs');
 var uglifyjs = require('uglify-js');
 var namedTemplateFn = require('./lib/namedTemplateFn');
-var safeName = require('./lib/safeName');
+var bracketedName = require('./lib/bracketedName');
 
 
 module.exports = function (templateDirectories, outputFile, options) {
@@ -78,7 +78,7 @@ module.exports = function (templateDirectories, outputFile, options) {
     });
 
     output += folders.map(function (folder) {
-        return rootName + safeName(folder.split(pathSep)) + ' = {};';
+        return rootName + bracketedName(folder.split(pathSep)) + ' = {};';
     }).join('\n') + '\n';
 
     templates.forEach(function (item) {
@@ -99,10 +99,9 @@ module.exports = function (templateDirectories, outputFile, options) {
         template = jadeAst.renameFunc(template, dirString);
         template = jadeAst.simplifyTemplate(template);
 
-        var astResult;
         var mixins = [];
         if (!options.dontTransformMixins) {
-            astResult = jadeAst.falafel({
+            var astResult = jadeAst.falafel({
                 template: template,
                 name: name,
                 dir: dirString,
@@ -127,8 +126,6 @@ module.exports = function (templateDirectories, outputFile, options) {
         .replace('{{code}}', indentOutput);
 
     if (outputFile) fs.writeFileSync(outputFile, finalOutput);
-
-    //console.log('\n\n===================\n===================\n\n')
 
     return finalOutput;
 };

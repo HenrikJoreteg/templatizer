@@ -8,5 +8,6 @@
     "undef": true,
     "trailing": true,
     "indent": 4,
-    "node": true
+    "node": true,
+    "unused": true
 }
