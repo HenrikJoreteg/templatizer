@@ -100,11 +100,20 @@ test("Test that templates work with jade global option", function () {
 
 test("Blocks", function () {
     var unalteredBlock = templatizer_unaltered.mixinsWithBlocks();
-    var withBlock = templatizer.mixinsWithBlocks();
-    var withoutBlock = templatizer.mixinsWithoutBlocks();
     var unalteredWithoutBlock = templatizer_unaltered.mixinsWithoutBlocks();
+
+    var withBlock = templatizer.mixinsWithBlocks();
+    var withBlockMixin = templatizer.mixinsWithBlocks.MyModal.call({
+        block: function (buf) {
+            buf.push('<p>some body text</p>');
+        }
+    }, 'foo');
+    var withoutBlock = templatizer.mixinsWithoutBlocks();
+    var withoutBlockMixin = templatizer.mixinsWithoutBlocks.MyModal('foo');
 
     ok(unalteredBlock === withBlock);
     ok(unalteredWithoutBlock === withoutBlock);
     ok(withBlock === withoutBlock);
+    ok(withoutBlockMixin === withoutBlock);
+    ok(withBlockMixin === withBlock);
 });

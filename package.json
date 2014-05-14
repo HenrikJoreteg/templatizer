@@ -47,6 +47,7 @@
     "benchmark": "node benchmark/speedtest.js",
     "build": "npm run runtime && node benchmark/build-demo.js",
     "browserify": "./node_modules/.bin/browserify test/browserify-test.js > test/tests-bundle.js",
-    "test": "npm run build && npm run browserify && open ./test/index.html  && open ./test/browserify.html"
+    "test": "npm run build && npm run browserify && npm run viewtest",
+    "viewtest": "open ./test/index.html && open ./test/browserify.html"
   }
 }
