@@ -1,6 +1,5 @@
 node_modules
 test/
 benchmark/icanhaz.js
-demo_output.js
 jaderuntime.js
 output_template.js

@@ -1,6 +1,6 @@
 /* globals test, ok */
 
-var t = require('../demo_output.js');
+var t = require('./demo_output.js');
 var data = {
     users: [{
         name: 'larry',

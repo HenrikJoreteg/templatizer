@@ -1,4 +1,39 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+
+},{}],2:[function(require,module,exports){
+/* globals test, ok */
+
+var t = require('./demo_output.js');
+var data = {
+    users: [{
+        name: 'larry',
+        url: 'http://andyet.com',
+        id: 1
+    }, {
+        name: 'curly',
+        url: 'http://andbang.com',
+        id: 2
+    }, {
+        name: 'moe',
+        url: 'http://talky.io',
+        id: 3
+    }]
+};
+
+module.exports = {
+    start: function () {
+        test("Test that templates work when browserified", function () {
+            var users = t.users,
+                withLocals = t.usersLocals;
+
+            ok(users({users: data.users}) === withLocals({users: data.users}));
+        });
+    }
+};
+
+module.exports.start();
+
+},{"./demo_output.js":3}],3:[function(require,module,exports){
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         define([], factory);
@@ -327,39 +362,4 @@
 
     return templatizer;
 }));
-},{"fs":2}],2:[function(require,module,exports){
-
-},{}],3:[function(require,module,exports){
-/* globals test, ok */
-
-var t = require('../demo_output.js');
-var data = {
-    users: [{
-        name: 'larry',
-        url: 'http://andyet.com',
-        id: 1
-    }, {
-        name: 'curly',
-        url: 'http://andbang.com',
-        id: 2
-    }, {
-        name: 'moe',
-        url: 'http://talky.io',
-        id: 3
-    }]
-};
-
-module.exports = {
-    start: function () {
-        test("Test that templates work when browserified", function () {
-            var users = t.users,
-                withLocals = t.usersLocals;
-
-            ok(users({users: data.users}) === withLocals({users: data.users}));
-        });
-    }
-};
-
-module.exports.start();
-
-},{"../demo_output.js":1}]},{},[3])
+},{"fs":1}]},{},[2])
