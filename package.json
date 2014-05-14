@@ -27,7 +27,8 @@
     "browserify": "^3.43.0",
     "colors": "^0.6.0",
     "precommit-hook": "^0.4.1",
-    "yetify": "0.1.0"
+    "yetify": "0.1.0",
+    "falafel": "^0.3.1"
   },
   "homepage": "https://github.com/HenrikJoreteg/templatizer",
   "keywords": [
