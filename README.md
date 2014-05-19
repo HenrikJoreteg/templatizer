@@ -35,7 +35,7 @@ So a folder like this
      nestedTemplate.jade
 ```
 
-Complies down to a JS file that looks something like this:
+Compiles down to a JS file that looks something like this:
 
 ```js
 // here's about 2k worth of utils that jade uses to DRY up the template code a bit. 
@@ -100,6 +100,14 @@ exports.users.user = function (user) {}
 ```
 
 This is helpful as it allows you to call `users()` to create your list and then `users.user()` to render just a single item in the list.
+
+## CLI
+
+Templatizer comes with a bin script to use from makefiles/package.json scripts/etc, it works like this: 
+
+```
+$ templatizer -d path/to/templates -o /path/to/output/templates.js
+```
 
 ## Sample?
 
