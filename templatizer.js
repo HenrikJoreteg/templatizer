@@ -1,6 +1,8 @@
 var jade = require('jade');
 var beautify = require('./lib/beautify');
-var jadeAst = require('./lib/jade-ast');
+var simplifyTemplate = require('./lib/simplifyTemplate');
+var transformMixins = require('./lib/transformMixins');
+var renameJadeFn = require('./lib/renameJadeFn');
 var walkdir = require('walkdir');
 var path = require('path');
 var _ = require('underscore');
@@ -96,12 +98,12 @@ module.exports = function (templateDirectories, outputFile, options) {
         jadeCompileOptions.filename = item;
         var template = beautify(jade.compileClient(fs.readFileSync(item, 'utf-8'), jadeCompileOptions).toString());
 
-        template = jadeAst.renameFunc(template, dirString);
-        template = jadeAst.simplifyTemplate(template);
+        template = renameJadeFn(template, dirString);
+        template = simplifyTemplate(template);
 
         var mixins = [];
         if (!options.dontTransformMixins) {
-            var astResult = jadeAst.falafel({
+            var astResult = transformMixins({
                 template: template,
                 name: name,
                 dir: dirString,

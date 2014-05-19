@@ -43,7 +43,7 @@
     "url": "https://github.com/HenrikJoreteg/templatizer.git"
   },
   "scripts": {
-    "runtime": "cp node_modules/jade/lib/runtime.js jaderuntime.js",
+    "copy-runtime": "cp node_modules/jade/lib/runtime.js jaderuntime.js",
     "benchmark": "node benchmark/speedtest.js",
     "build": "npm run runtime && node benchmark/build-demo.js",
     "browserify": "./node_modules/.bin/browserify test/browserify-test.js > test/tests-bundle.js",
