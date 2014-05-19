@@ -3,6 +3,7 @@
   "description": "Simple solution for compiling jade templates into vanilla JS functions for blazin' fast client-side use.",
   "version": "0.3.3",
   "author": "Henrik Joreteg <henrik@andyet.net>",
+  "bin": "./bin/cli",
   "bugs": "https://github.com/HenrikJoreteg/templatizer/issues",
   "contributors": [
     {
@@ -19,6 +20,7 @@
     "esprima": "^1.0.4",
     "jade": "^1.3.0",
     "jshint": "^2.5.0",
+    "minimist": "^0.1.0",
     "uglify-js": "^2.4.0",
     "underscore": "^1.5.1",
     "walkdir": "0.0.7"
