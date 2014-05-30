@@ -1,7 +1,7 @@
 {
   "name": "templatizer",
   "description": "Simple solution for compiling jade templates into vanilla JS functions for blazin' fast client-side use.",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "author": "Henrik Joreteg <henrik@andyet.net>",
   "bugs": "https://github.com/HenrikJoreteg/templatizer/issues",
   "contributors": [
