@@ -324,15 +324,5 @@
         return buf.join("");
     };
 
-    // otherfolder/othertweet2.jade compiled template
-    templatizer["otherfolder"]["othertweet2"] = function tmpl_otherfolder_othertweet2() {
-        return "<p>test</p>";
-    };
-
-    // test.jade compiled template
-    templatizer["test"] = function tmpl_test() {
-        return "<p>test</p>";
-    };
-
     return templatizer;
 }));

@@ -1,11 +1,15 @@
 var jade = require('jade');
 var beautify = require('./lib/beautify');
-var jadeAst = require('./lib/jade-ast');
+var simplifyTemplate = require('./lib/simplifyTemplate');
+var transformMixins = require('./lib/transformMixins');
+var renameJadeFn = require('./lib/renameJadeFn');
 var walkdir = require('walkdir');
 var path = require('path');
 var _ = require('underscore');
 var fs = require('fs');
 var uglifyjs = require('uglify-js');
+var namedTemplateFn = require('./lib/namedTemplateFn');
+var bracketedName = require('./lib/bracketedName');
 
 
 module.exports = function (templateDirectories, outputFile, options) {
@@ -19,7 +23,7 @@ module.exports = function (templateDirectories, outputFile, options) {
     if (typeof templateDirectories === "string") {
         templateDirectories = [templateDirectories];
     }
-    var parentObjName = 'templatizer';
+    var rootName = 'templatizer';
     var folders = [];
     var templates = [];
     var _readTemplates = [];
@@ -64,7 +68,6 @@ module.exports = function (templateDirectories, outputFile, options) {
                 if (_readTemplates.indexOf(item) > -1) {
                     throw new Error(item + ' from ' + templateDirectory + pathSep + item + ' already exists in ' + templates[_readTemplates.indexOf(item)]);
                 }
-
                 _readTemplates.push(item);
                 templates.push(templateDirectory + pathSep + item);
             }
@@ -76,12 +79,10 @@ module.exports = function (templateDirectories, outputFile, options) {
         });
     });
 
-    output += '\n// create our folder objects';
-    folders.forEach(function (folder) {
-        var arr = folder.split(pathSep);
-        output += '\n' + parentObjName + '["' + arr.join('"]["') + '"] = {};';
-    });
-    output += '\n';
+    output += folders.map(function (folder) {
+        return rootName + bracketedName(folder.split(pathSep)) + ' = {};';
+    }).join('\n') + '\n';
+
     templates.forEach(function (item) {
         var name = path.basename(item, '.jade');
         var dirString = function () {
@@ -93,34 +94,32 @@ module.exports = function (templateDirectories, outputFile, options) {
             dirname += '.' + name;
             return dirname.substring(1).replace(pathSepRegExp, '.');
         }();
-        var mixinOutput = '';
 
         jadeCompileOptions.filename = item;
         var template = beautify(jade.compileClient(fs.readFileSync(item, 'utf-8'), jadeCompileOptions).toString());
 
-        template = jadeAst.renameFunc(template, dirString);
+        template = renameJadeFn(template, dirString);
+        template = simplifyTemplate(template);
 
-        var astResult = jadeAst.getMixins({
-            template: template,
-            templateName: name,
-            dirString: dirString,
-            parentObjName: parentObjName
-        });
-
-        
+        var mixins = [];
         if (!options.dontTransformMixins) {
-            mixinOutput = astResult.mixins;
+            var astResult = transformMixins({
+                template: template,
+                name: name,
+                dir: dirString,
+                rootName: rootName
+            });
+            mixins = astResult.mixins;
             template = astResult.template;
         }
 
-        template = jadeAst.simplifyTemplate(template);
+        output += namedTemplateFn({
+            dir: dirString,
+            rootName: rootName,
+            fn: template
+        });
 
-        output += [
-            '',
-            '// ' + dirString.replace(/\./g, pathSep) + '.jade compiled template',
-            parentObjName + '["' + dirString.replace(/\./g, '"]["') + '"] = ' + template + ';',
-            ''
-        ].join('\n') + mixinOutput;
+        output += mixins.join('\n');
     });
 
     var indentOutput = output.split('\n').map(function (l) { return l ? '    ' + l : l; }).join('\n');

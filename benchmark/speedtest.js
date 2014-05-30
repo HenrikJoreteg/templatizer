@@ -3,6 +3,9 @@ var colors = require('colors'),
     fs = require('fs'),
     ich = require('./icanhaz');
 
+// satisfy jshint
+colors;
+
 // test setup
 var data = {users: ['larry', 'curly', 'moe']};
 var complexData = {
@@ -30,7 +33,7 @@ console.log('\nSetting up templatizer'.bold);
 console.log('1.'.grey + ' built: demo_output.js, demo_output_mixins.js');
 console.log('2.'.grey + ' now reading in generated files');
 var templatesNoMixins = require('../test/demo_output_no_mixins');
-var templates = require('../demo_output');
+var templates = require('../test/demo_output');
 
 i = ITERATIONS;
 console.log('3.'.grey + ' running templatizer version ' + ITERATIONS + ' times.');

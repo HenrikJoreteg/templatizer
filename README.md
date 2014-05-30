@@ -103,7 +103,7 @@ This is helpful as it allows you to call `users()` to create your list and then 
 
 ## Sample?
 
-Check out the `demo_output.js` file for... err... demo output built from the `templates` directory in this project.
+Check out the `tests/demo_output.js` file for... err... demo output built from the `templates` directory in this project.
 
 ## Changelog
 
