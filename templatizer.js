@@ -34,7 +34,7 @@ module.exports = function (templateDirectories, outputFile, options) {
     // Find jade runtime and create minified code
     // where it is assigned to the variable jade
     var placesToLook = [
-        __dirname + '/node_modules/jade/lib/runtim.js',
+        __dirname + '/node_modules/jade/lib/runtime.js',
         __dirname + '/jaderuntime.js'
     ];
     var jadeRuntime = fs.readFileSync(_.find(placesToLook, fs.existsSync)).toString();
