@@ -62,7 +62,28 @@ The awesome thing is... there are no external dependencies because they're just 
 
 The third parameter passed to `templatizer` is an options object.
 
-Currently the only available option is `jade`, which is an object which will be passed directly to `jade.compile()`. See the [Jade API documentation](http://jade-lang.com/api/) for what options are available.
+#### `namespace` (string, default `window`)
+
+If you are using templatizer as a global in the browser (without requirejs, browserify, or something similar) by default it will attach itself to `window`. Using `namespace` you can attach it to a different global object. For example:
+
+```js
+templatizer(templatesDir, 'templates.js', {
+    namespace: 'app'
+});
+```
+
+```html
+<script>var app = {};</script>
+<script src="templates.js"></script>
+<script>
+  // Templates will be available on app.templatizer
+  document.body.innerHTML = app.templatizer.body();
+</script>
+```
+
+#### `jade` (object, default `{}`)
+
+`jade` is an object which will be passed directly to `jade.compile()`. See the [Jade API documentation](http://jade-lang.com/api/) for what options are available.
 
 Here's an example where we set the Jade `compileDebug` option to `true`.
 

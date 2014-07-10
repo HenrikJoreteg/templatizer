@@ -28,6 +28,7 @@
   "devDependencies": {
     "browserify": "^3.43.0",
     "colors": "^0.6.0",
+    "http-server": "^0.6.1",
     "jshint": "^2.5.0",
     "precommit-hook": "^0.4.1",
     "yetify": "0.1.0"
@@ -46,10 +47,12 @@
   },
   "scripts": {
     "copy-runtime": "cp node_modules/jade/lib/runtime.js jaderuntime.js",
+    "copy-underscore": "cp node_modules/underscore/underscore.js test/underscore.js",
     "benchmark": "node benchmark/speedtest.js",
     "build": "npm run runtime && node benchmark/build-demo.js",
     "browserify": "./node_modules/.bin/browserify test/browserify-test.js > test/tests-bundle.js",
-    "test": "npm run build && npm run browserify && npm run viewtest",
-    "viewtest": "open ./test/index.html && open ./test/browserify.html"
+    "setup-test": "npm run build && npm run browserify && npm run copy-underscore",
+    "test": "npm run setup-test && node test/index",
+    "browser-test": "npm run setup-test && http-server -p 3003 test/"
   }
 }
