@@ -17,7 +17,8 @@ module.exports = function (templateDirectories, outputFile, options) {
 
     _.defaults(options, {
         dontTransformMixins: false,
-        jade: {}
+        jade: {},
+        ignoreExtends: []
     });
 
     if (typeof templateDirectories === "string") {
@@ -83,6 +84,13 @@ module.exports = function (templateDirectories, outputFile, options) {
         return rootName + bracketedName(folder.split(pathSep)) + ' = {};';
     }).join('\n') + '\n';
 
+    var ignoreExtendsRegex = "extends (";
+    var ignoreExtends = [];
+    options.ignoreExtends.forEach(function(item) {
+        ignoreExtends.push(item.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"));
+    });
+    ignoreExtendsRegex = new RegExp(ignoreExtendsRegex + ignoreExtends.join("|") + ")");
+
     templates.forEach(function (item) {
         var name = path.basename(item, '.jade');
         var dirString = function () {
@@ -96,7 +104,21 @@ module.exports = function (templateDirectories, outputFile, options) {
         }();
 
         jadeCompileOptions.filename = item;
-        var template = beautify(jade.compileClient(fs.readFileSync(item, 'utf-8'), jadeCompileOptions).toString());
+        var file = fs.readFileSync(item, 'utf-8');
+
+        if (ignoreExtends.length >= 1) {
+            file = file.split(/(\r\n|\r|\n)/);
+            var newFile = [];
+
+            file.forEach(function(line) {
+                if (line.search(ignoreExtendsRegex) == -1) newFile.push(line);
+            });
+
+            file = newFile.join("\n");
+        }
+
+
+        var template = beautify(jade.compileClient(file, jadeCompileOptions).toString());
 
         template = renameJadeFn(template, dirString);
         template = simplifyTemplate(template);
