@@ -31,6 +31,7 @@
     "http-server": "^0.6.1",
     "jshint": "^2.5.0",
     "precommit-hook": "^0.4.1",
+    "testee": "0.0.13",
     "yetify": "0.1.0"
   },
   "homepage": "https://github.com/HenrikJoreteg/templatizer",
@@ -52,7 +53,7 @@
     "build": "npm run runtime && node benchmark/build-demo.js",
     "browserify": "./node_modules/.bin/browserify test/browserify-test.js > test/tests-bundle.js",
     "setup-test": "npm run build && npm run browserify && npm run copy-underscore",
-    "test": "npm run setup-test && node test/index",
+    "test": "npm run setup-test && testee test/index.html",
     "browser-test": "npm run setup-test && http-server -p 3003 test/"
   }
 }
