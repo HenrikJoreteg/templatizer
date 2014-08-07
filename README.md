@@ -16,11 +16,11 @@ From my tests it's 6 to 10 times faster than mustache.js with ICanHaz.
 1. `npm install templatizer`
 1. Write all your templates as individual jade files in a folder in your project.
 1. Somewhere in your build process do this:
-    
+
 ```js
 var templatizer = require('templatizer');
 
-// pass in the template directory and what you want to 
+// pass in the template directory and what you want to
 // save the output file as. That's it!
 templatizer(__dirname + '/templates', __dirname + '/demo_output.js', options);
 ```
@@ -38,18 +38,18 @@ So a folder like this
 Compiles down to a JS file that looks something like this:
 
 ```js
-// here's about 2k worth of utils that jade uses to DRY up the template code a bit. 
+// here's about 1.6k worth of utils that jade uses to DRY up the template code a bit.
 // Includes some basic shims for Object.keys, etc.
 var jade=function(exports){ ... }
 
 // a function built from the `user.jade` file
 // that takes your data and returns a string.
-exports.user = function () {} 
+exports.user = function () {}
 
 // built from the `app.jade` file
-exports.app = function () {} // the function 
+exports.app = function () {} // the function
 
-// folders become nested objects so 
+// folders become nested objects so
 // myfolder/nestedTemplate.jade becomes
 exports.myfolder.nestedTemplate = function () {} // the template function
 
@@ -64,7 +64,7 @@ The third parameter passed to `templatizer` is an options object.
 
 #### `namespace` (string, default `window`)
 
-If you are using templatizer as a global in the browser (without requirejs, browserify, or something similar) by default it will attach itself to `window`. Using `namespace` you can attach it to a different global object. For example:
+If you are using templatizer as a global in the browser (without node, requirejs, browserify, or something similar) by default it will attach itself to `window`. Using `namespace` you can attach it to a different global object. For example:
 
 ```js
 templatizer(templatesDir, 'templates.js', {
@@ -124,15 +124,15 @@ This is helpful as it allows you to call `users()` to create your list and then 
 
 ## CLI
 
-Templatizer comes with a bin script to use from makefiles/package.json scripts/etc, it works like this: 
+Templatizer comes with a bin script to use from makefiles/package.json scripts/etc, it works like this:
 
 ```
 $ templatizer -d path/to/templates -o /path/to/output/templates.js
 ```
 
-## Sample?
+## Tests
 
-Check out the `tests/demo_output.js` file for... err... demo output built from the `templates` directory in this project.
+Run `npm test` to run the tests (you'll need phantomjs installed). You can also run the tests in your browser with `npm run browser-test` and going to [http://localhost:3003](http://localhost:3003).
 
 ## Changelog
 
