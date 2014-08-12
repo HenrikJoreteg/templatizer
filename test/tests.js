@@ -1,4 +1,4 @@
-/* globals test, ok, templatizer, templatizer_unaltered, templatizer_multiple_dirs, templatizer_globals */
+/* globals test, ok, templatizer, unaltered, multipleDirs, app, _, globalErrorCount */
 
 var data = {
     users: [{
@@ -55,18 +55,18 @@ test("Test calling templates with different context", function () {
 });
 
 test("Test multiple dirs", function () {
-    ok(templatizer_multiple_dirs.hasOwnProperty('test'));
+    ok(multipleDirs.templatizer.hasOwnProperty('test'));
     ok(!templatizer.hasOwnProperty('test'));
 
-    ok(templatizer_multiple_dirs.otherfolder.hasOwnProperty('othertweet'));
-    ok(templatizer_multiple_dirs.otherfolder.hasOwnProperty('othertweet2'));
+    ok(multipleDirs.templatizer.otherfolder.hasOwnProperty('othertweet'));
+    ok(multipleDirs.templatizer.otherfolder.hasOwnProperty('othertweet2'));
     ok(templatizer.otherfolder.hasOwnProperty('othertweet'));
     ok(!templatizer.otherfolder.hasOwnProperty('othertweet2'));
 });
 
 test("Test altered vs unaltered mixins", function () {
     var users = templatizer.usersMixins({users: data.users});
-    var _users = templatizer_unaltered.usersMixins({users: data.users});
+    var _users = unaltered.templatizer.usersMixins({users: data.users});
 
     ok(users === _users);
 });
@@ -99,8 +99,8 @@ test("Test that templates work with jade global option", function () {
 });
 
 test("Blocks", function () {
-    var unalteredBlock = templatizer_unaltered.mixinsWithBlocks();
-    var unalteredWithoutBlock = templatizer_unaltered.mixinsWithoutBlocks();
+    var unalteredBlock = unaltered.templatizer.mixinsWithBlocks();
+    var unalteredWithoutBlock = unaltered.templatizer.mixinsWithoutBlocks();
 
     var withBlock = templatizer.mixinsWithBlocks();
     var withBlockMixin = templatizer.mixinsWithBlocks.MyModal.call({
@@ -116,4 +116,16 @@ test("Blocks", function () {
     ok(withBlock === withoutBlock);
     ok(withoutBlockMixin === withoutBlock);
     ok(withBlockMixin === withBlock);
+});
+
+test("Namespaces", function () {
+    ok(_.isObject(app));
+    ok(_.isObject(app.nested));
+    ok(_.isObject(app.nested.templatizer));
+});
+
+test('Global error count', function () {
+    ok(typeof app.isBoolean === 'boolean');
+    ok(typeof app.nonExistant === 'undefined');
+    ok(globalErrorCount === 2);
 });

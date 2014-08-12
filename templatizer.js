@@ -15,21 +15,30 @@ var bracketedName = require('./lib/bracketedName');
 module.exports = function (templateDirectories, outputFile, options) {
     options || (options = {});
 
+    var internalNamespace = 'templatizer';
+
     _.defaults(options, {
         dontTransformMixins: false,
-        jade: {}
+        jade: {},
+        namespace: '' // No namespace means 'window'
     });
 
     if (typeof templateDirectories === "string") {
         templateDirectories = [templateDirectories];
     }
-    var rootName = 'templatizer';
+    
+    var namespace = _.isString(options.namespace) ? options.namespace : '';
     var folders = [];
     var templates = [];
     var _readTemplates = [];
     var isWindows = process.platform === 'win32';
     var pathSep = path.sep || (isWindows ? '\\' : '/');
     var pathSepRegExp = /\/|\\/g;
+
+    // Split our namespace on '.' and use bracket syntax
+    if (namespace) {
+        namespace = bracketedName(namespace.split('.'));
+    }
 
     // Find jade runtime and create minified code
     // where it is assigned to the variable jade
@@ -80,7 +89,7 @@ module.exports = function (templateDirectories, outputFile, options) {
     });
 
     output += folders.map(function (folder) {
-        return rootName + bracketedName(folder.split(pathSep)) + ' = {};';
+        return internalNamespace + bracketedName(folder.split(pathSep)) + ' = {};';
     }).join('\n') + '\n';
 
     templates.forEach(function (item) {
@@ -107,7 +116,7 @@ module.exports = function (templateDirectories, outputFile, options) {
                 template: template,
                 name: name,
                 dir: dirString,
-                rootName: rootName
+                rootName: internalNamespace
             });
             mixins = astResult.mixins;
             template = astResult.template;
@@ -115,7 +124,7 @@ module.exports = function (templateDirectories, outputFile, options) {
 
         output += namedTemplateFn({
             dir: dirString,
-            rootName: rootName,
+            rootName: internalNamespace,
             fn: template
         });
 
@@ -124,6 +133,8 @@ module.exports = function (templateDirectories, outputFile, options) {
 
     var indentOutput = output.split('\n').map(function (l) { return l ? '    ' + l : l; }).join('\n');
     var finalOutput = outputTemplate
+        .replace(/\{\{namespace\}\}/g, namespace)
+        .replace(/\{\{internalNamespace\}\}/g, internalNamespace)
         .replace('{{jade}}', wrappedJade)
         .replace('{{code}}', indentOutput);
 

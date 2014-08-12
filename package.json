@@ -19,7 +19,7 @@
     "escodegen": "0.0.26",
     "esprima": "^1.2.1",
     "falafel": "^0.3.1",
-    "jade": "^1.3.0",
+    "jade": "^1.5.0",
     "minimist": "^0.1.0",
     "uglify-js": "^2.4.0",
     "underscore": "^1.5.1",
@@ -28,8 +28,10 @@
   "devDependencies": {
     "browserify": "^3.43.0",
     "colors": "^0.6.0",
+    "http-server": "^0.6.1",
     "jshint": "^2.5.0",
     "precommit-hook": "^0.4.1",
+    "testee": "0.0.13",
     "yetify": "0.1.0"
   },
   "homepage": "https://github.com/HenrikJoreteg/templatizer",
@@ -46,10 +48,12 @@
   },
   "scripts": {
     "copy-runtime": "cp node_modules/jade/lib/runtime.js jaderuntime.js",
+    "copy-underscore": "cp node_modules/underscore/underscore.js test/underscore.js",
     "benchmark": "node benchmark/speedtest.js",
-    "build": "npm run runtime && node benchmark/build-demo.js",
+    "build": "npm run copy-runtime && node build.js",
     "browserify": "./node_modules/.bin/browserify test/browserify-test.js > test/tests-bundle.js",
-    "test": "npm run build && npm run browserify && npm run viewtest",
-    "viewtest": "open ./test/index.html && open ./test/browserify.html"
+    "setup-test": "npm run build && npm run browserify && npm run copy-underscore",
+    "test": "npm run setup-test && testee test/index.html",
+    "browser-test": "npm run setup-test && http-server -p 3003 test/"
   }
 }
