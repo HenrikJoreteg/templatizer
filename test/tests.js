@@ -129,3 +129,14 @@ test('Global error count', function () {
     ok(typeof app.nonExistant === 'undefined');
     ok(globalErrorCount === 2);
 });
+
+test('Test mixin being called with (nested) array item argument', function () {
+    var tmplString = templatizer.mixinArrayArg();
+    var tmplString2 = unaltered.templatizer.mixinArrayArg();
+    var tmplString3 = templatizer.otherfolder.deepnested.mixinArrayArg();
+    var tmplString4 = unaltered.templatizer.otherfolder.deepnested.mixinArrayArg();
+
+    ok(tmplString === tmplString2);
+    ok(tmplString3 === tmplString4);
+    ok(tmplString === tmplString4);
+});

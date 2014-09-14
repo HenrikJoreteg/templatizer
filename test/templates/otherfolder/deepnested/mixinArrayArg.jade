@@ -1,0 +1,9 @@
+mixin test2(index)
+    li= index
+
+mixin test(arr)
+    - for (var i = 0; i < arr.length; i++)
+        mixin test2(arr[i])
+
+ul
+    mixin test([1, 2, 3, 4])

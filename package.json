@@ -30,6 +30,7 @@
     "colors": "^0.6.0",
     "http-server": "^0.6.1",
     "jshint": "^2.5.0",
+    "phantomjs": "^1.9.7-15",
     "precommit-hook": "^0.4.1",
     "testee": "0.0.13",
     "yetify": "0.1.0"
