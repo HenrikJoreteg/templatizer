@@ -1,4 +1,4 @@
-/* globals test, ok, templatizer, unaltered, multipleDirs, app, _, globalErrorCount */
+/* globals test, ok, templatizer, unaltered, multipleDirs, dontRemoveMixins, app, _, globalErrorCount */
 
 var data = {
     users: [{
@@ -139,4 +139,18 @@ test('Test mixin being called with (nested) array item argument', function () {
     ok(tmplString === tmplString2);
     ok(tmplString3 === tmplString4);
     ok(tmplString === tmplString4);
+});
+
+test('Mixins can be created even if uncalled in the file', function () {
+    var ucm = templatizer.uncalledMixin;
+    var drm = dontRemoveMixins.templatizer.uncalledMixin;
+
+    ok(typeof ucm.test === 'function');
+    ok(typeof ucm.uncalled_test === 'undefined');
+    ok(typeof drm.test === 'function');
+    ok(typeof drm.uncalled_test === 'function');
+
+    ok(ucm() === drm());
+    ok(ucm.test('test', 0) === drm.test('test', 0));
+    ok(drm.test('test', 0) === drm.uncalled_test('test', 0));
 });

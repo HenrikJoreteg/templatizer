@@ -5,12 +5,20 @@ var transformMixins = require('./lib/transformMixins');
 var renameJadeFn = require('./lib/renameJadeFn');
 var walkdir = require('walkdir');
 var path = require('path');
+var util = require('util');
 var _ = require('underscore');
 var fs = require('fs');
 var uglifyjs = require('uglify-js');
 var namedTemplateFn = require('./lib/namedTemplateFn');
 var bracketedName = require('./lib/bracketedName');
 
+// Setting dynamicMixins to true will result in
+// all mixins being written to the file
+function DynamicMixinsCompiler () {
+    jade.Compiler.apply(this, arguments);
+    this.dynamicMixins = true;
+}
+util.inherits(DynamicMixinsCompiler, jade.Compiler);
 
 module.exports = function (templateDirectories, outputFile, options) {
     options || (options = {});
@@ -19,6 +27,7 @@ module.exports = function (templateDirectories, outputFile, options) {
 
     _.defaults(options, {
         dontTransformMixins: false,
+        dontRemoveMixins: false,
         jade: {},
         namespace: '' // No namespace means 'window'
     });
@@ -103,6 +112,10 @@ module.exports = function (templateDirectories, outputFile, options) {
             dirname += '.' + name;
             return dirname.substring(1).replace(pathSepRegExp, '.');
         }();
+
+        if (options.dontRemoveMixins) {
+            jadeCompileOptions.compiler = DynamicMixinsCompiler;
+        }
 
         jadeCompileOptions.filename = item;
         var template = beautify(jade.compileClient(fs.readFileSync(item, 'utf-8'), jadeCompileOptions).toString());
