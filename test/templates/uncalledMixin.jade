@@ -1,0 +1,10 @@
+mixin test(user, index)
+    li #{user} - #{index}
+
+mixin uncalled_test(user, index)
+    li #{user} - #{index}
+
+ul
+    mixin test('test', 0)
+    li 1
+    li 2

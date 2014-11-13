@@ -1,5 +1,8 @@
 node_modules
-test/
+test/builtTemplates
+test/tests-bundle.js
+test/underscore.js
+test/qunit.js
 benchmark/icanhaz.js
 jaderuntime.js
 output_template.js

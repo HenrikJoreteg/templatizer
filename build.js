@@ -26,4 +26,9 @@ templatizer(tmplPath, path.resolve(outputPath, 'bad_namespaced2.js'), {
     namespace: 'app.isBoolean'
 });
 
+templatizer(tmplPath, path.resolve(outputPath, 'dont_remove_mixins.js'), {
+    namespace: 'dontRemoveMixins',
+    dontRemoveMixins: true
+});
+
 templatizer(tmplPath, path.resolve(outputPath, 'templates.js'));

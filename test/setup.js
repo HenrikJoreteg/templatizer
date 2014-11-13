@@ -1,6 +1,7 @@
 /* globals test, ok, window */
 /* jshint unused:false */
 
+var dontRemoveMixins = {};
 var unaltered = {};
 var multipleDirs = {};
 var app = { nested: {}, isBoolean: true };
