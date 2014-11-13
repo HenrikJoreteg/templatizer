@@ -154,3 +154,11 @@ test('Mixins can be created even if uncalled in the file', function () {
     ok(ucm.test('test', 0) === drm.test('test', 0));
     ok(drm.test('test', 0) === drm.uncalled_test('test', 0));
 });
+
+test('Mixin only', function () {
+    var tmplString = templatizer.mixinOnly();
+    var hello = templatizer.mixinOnly.hello();
+
+    ok(tmplString === '');
+    ok(hello === '<div></div>');
+});
