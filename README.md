@@ -81,6 +81,10 @@ templatizer(templatesDir, 'templates.js', {
 </script>
 ```
 
+#### `dontRemoveMixins` (boolean, default false)
+
+By default `jade` will not compile any mixins which aren't being called from the file they were created in. This is usually a very good thing, since keeps file sizes down. But in some cases (especially when using the [mixin support](#mixin-support) functionality), you may want to create mixins and call them from other places in your code or other files. Setting this option to `true` will keep all mixins in the compiled source.
+
 #### `jade` (object, default `{}`)
 
 `jade` is an object which will be passed directly to `jade.compile()`. See the [Jade API documentation](http://jade-lang.com/api/) for what options are available.
