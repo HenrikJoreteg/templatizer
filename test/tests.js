@@ -140,3 +140,11 @@ test('Test mixin being called with (nested) array item argument', function () {
     ok(tmplString3 === tmplString4);
     ok(tmplString === tmplString4);
 });
+
+test('Mixin only', function () {
+    var tmplString = templatizer.mixinOnly();
+    var mixinString = templatizer.mixinOnly.hello();
+
+    ok(tmplString === '');
+    ok(mixinString === '<div></div>');
+});
