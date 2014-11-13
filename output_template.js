@@ -3,9 +3,10 @@
         define([], factory);
     } else if (typeof exports === 'object') {
         module.exports = factory();
-    } else if (typeof root{{namespace}} === 'undefined' || root{{namespace}} !== Object(root{{namespace}})) {
-        throw new Error('{{internalNamespace}}: window{{namespace}} does not exist or is not an object');
     } else {
+        if (typeof root{{namespace}} === 'undefined' || root{{namespace}} !== Object(root{{namespace}})) {
+            root{{namespace}} = {};
+        }
         root{{namespace}}.{{internalNamespace}} = factory();
     }
 }(this, function () {
