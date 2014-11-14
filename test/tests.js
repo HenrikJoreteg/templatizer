@@ -1,4 +1,4 @@
-/* globals test, ok, templatizer, unaltered, multipleDirs, dontRemoveMixins, app, _, globalErrorCount */
+/* globals test, ok, templatizer, unaltered, multipleDirs, dontRemoveMixins, app, app2, _, globalErrorCount */
 
 var data = {
     users: [{
@@ -161,4 +161,9 @@ test('Mixin only', function () {
 
     ok(tmplString === '');
     ok(hello === '<div></div>');
+});
+
+test('Parent namespace and module namespace will be created and not throw an error if option is specified', function () {
+    var userString = app2.my_templates.users(data);
+    ok(userString == '<ul><li>larry</li><li>curly</li><li>moe</li></ul>');
 });

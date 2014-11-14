@@ -18,6 +18,14 @@ templatizer(tmplPath, path.resolve(outputPath, 'namespaced.js'), {
     namespace: 'app.nested'
 });
 
+templatizer(tmplPath, path.resolve(outputPath, 'create_namespace.js'), {
+    namespace: {
+        parent: 'app2',
+        name: 'my_templates',
+        defineParent: true
+    }
+});
+
 templatizer(tmplPath, path.resolve(outputPath, 'bad_namespaced.js'), {
     namespace: 'app.nonExistant'
 });

@@ -4,9 +4,7 @@
     } else if (typeof exports === 'object') {
         module.exports = factory();
     } else {
-        if (typeof root{{namespace}} === 'undefined' || root{{namespace}} !== Object(root{{namespace}})) {
-            root{{namespace}} = {};
-        }
+{{checkParent}}
         root{{namespace}}.{{internalNamespace}} = factory();
     }
 }(this, function () {
