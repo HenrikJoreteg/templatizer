@@ -27,6 +27,5 @@ build/Release
 node_modules
 
 # Custom
-test/builtTemplates
 test/tests-bundle.js
 test/underscore.js
