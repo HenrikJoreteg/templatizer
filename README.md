@@ -1,5 +1,9 @@
 # templatizer.js
 
+[![Build Status](https://travis-ci.org/HenrikJoreteg/templatizer.png?branch=master)](https://travis-ci.org/HenrikJoreteg/templatizer)
+
+[![NPM](https://nodei.co/npm/templatizer.png?downloads=true)](https://nodei.co/npm/templatizer/)
+
 Simple solution for compiling jade templates into vanilla JS functions for blazin' fast client-side use.
 
 ## What is this?
