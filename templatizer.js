@@ -79,6 +79,10 @@ module.exports = function (templateDirectories, outputFile, options) {
 
         walkdir.sync(templateDirectory).forEach(function (file) {
             var item = file.replace(path.resolve(templateDirectory), '').slice(1);
+            // Skip hidden files
+            if (item.charAt(0) === '.' || item.indexOf(pathSep + '.') !== -1) {
+              return;
+            }
             if (path.extname(item) === '' && path.basename(item).charAt(0) !== '.') {
                 if (folders.indexOf(item) === -1) folders.push(item);
             } else if (path.extname(item) === '.jade') {
