@@ -11,6 +11,7 @@ var fs = require('fs');
 var uglifyjs = require('uglify-js');
 var namedTemplateFn = require('./lib/namedTemplateFn');
 var bracketedName = require('./lib/bracketedName');
+var glob = require('glob');
 
 // Setting dynamicMixins to true will result in
 // all mixins being written to the file
@@ -33,9 +34,9 @@ module.exports = function (templateDirectories, outputFile, options) {
     });
 
     if (typeof templateDirectories === "string") {
-        templateDirectories = [templateDirectories];
+        templateDirectories = glob.sync(templateDirectories);
     }
-    
+
     var namespace = _.isString(options.namespace) ? options.namespace : '';
     var folders = [];
     var templates = [];
@@ -68,38 +69,44 @@ module.exports = function (templateDirectories, outputFile, options) {
     };
     _.extend(jadeCompileOptions, options.jade);
 
-    templateDirectories = _.map(templateDirectories, function (templateDirectory) {
-        return templateDirectory.replace(pathSepRegExp, pathSep);
-    });
+    templateDirectories = _.chain(templateDirectories)
+                           .map(function (templateDirectory) {
+                                if(path.extname(templateDirectory).length > 1) {
+                                    // Remove filename and ext
+                                    return path.dirname(templateDirectory).replace(pathSepRegExp, pathSep);
+                                }
+                                return templateDirectory.replace(pathSepRegExp, pathSep);
+                            })
+                           .uniq()
+                           .each(function (templateDirectory) {
+                                if (!fs.existsSync(templateDirectory)) {
+                                    throw new Error('Template directory ' + templateDirectory + ' does not exist.');
+                                }
 
-    templateDirectories.forEach(function (templateDirectory) {
-        if (!fs.existsSync(templateDirectory)) {
-            throw new Error('Template directory ' + templateDirectory + ' does not exist.');
-        }
+                                walkdir.sync(templateDirectory).forEach(function (file) {
+                                    var item = file.replace(path.resolve(templateDirectory), '').slice(1);
+                                    // Skip hidden files
+                                    if (item.charAt(0) === '.' || item.indexOf(pathSep + '.') !== -1) {
+                                      return;
+                                    }
+                                    if (path.extname(item) === '' && path.basename(item).charAt(0) !== '.') {
+                                        if (folders.indexOf(item) === -1) folders.push(item);
+                                    } else if (path.extname(item) === '.jade') {
+                                        // Throw an err if we are about to override a template
+                                        if (_readTemplates.indexOf(item) > -1) {
+                                            throw new Error(item + ' from ' + templateDirectory + pathSep + item + ' already exists in ' + templates[_readTemplates.indexOf(item)]);
+                                        }
+                                        _readTemplates.push(item);
+                                        templates.push(templateDirectory + pathSep + item);
+                                    }
+                                });
 
-        walkdir.sync(templateDirectory).forEach(function (file) {
-            var item = file.replace(path.resolve(templateDirectory), '').slice(1);
-            // Skip hidden files
-            if (item.charAt(0) === '.' || item.indexOf(pathSep + '.') !== -1) {
-              return;
-            }
-            if (path.extname(item) === '' && path.basename(item).charAt(0) !== '.') {
-                if (folders.indexOf(item) === -1) folders.push(item);
-            } else if (path.extname(item) === '.jade') {
-                // Throw an err if we are about to override a template
-                if (_readTemplates.indexOf(item) > -1) {
-                    throw new Error(item + ' from ' + templateDirectory + pathSep + item + ' already exists in ' + templates[_readTemplates.indexOf(item)]);
-                }
-                _readTemplates.push(item);
-                templates.push(templateDirectory + pathSep + item);
-            }
-        });
-
-        folders = _.sortBy(folders, function (folder) {
-            var arr = folder.split(pathSep);
-            return arr.length;
-        });
-    });
+                                folders = _.sortBy(folders, function (folder) {
+                                    var arr = folder.split(pathSep);
+                                    return arr.length;
+                                });
+                            })
+                           .value();
 
     output += folders.map(function (folder) {
         return internalNamespace + bracketedName(folder.split(pathSep)) + ' = {};';
