@@ -62,6 +62,14 @@ exports.myfolder.nestedTemplate = function () {} // the template function
 
 The awesome thing is... there are no external dependencies because they're just functions at this point. Crazy fast, SO MUCH WIN!!!!
 
+### Glob Paths
+
+The directory path can also be a [glob](https://github.com/isaacs/node-glob) instead that can be used to match `*.jade` files across multiple directories. For example:
+
+```js
+templatizer(__dirname + '/app/**/*.jade', __dirname + '/templates.js');
+```
+
 ### Options
 
 The third parameter passed to `templatizer` is an options object.

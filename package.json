@@ -56,6 +56,6 @@
     "browserify": "./node_modules/.bin/browserify test/browserify-test.js > test/tests-bundle.js",
     "setup-test": "npm run build && npm run browserify && npm run copy-underscore",
     "test": "npm run setup-test && testee test/index.html",
-    "browser-test": "npm run setup-test && http-server -p 3003 test/"
+    "start": "npm run setup-test && http-server -p 3003 test/"
   }
 }

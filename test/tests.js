@@ -1,4 +1,4 @@
-/* globals test, ok, templatizer, unaltered, multipleDirs, dontRemoveMixins, app, _, globalErrorCount */
+/* globals test, ok, equal, templatizer, unaltered, multipleDirs, dontRemoveMixins, app, _, globalErrorCount, glob */
 
 var data = {
     users: [{
@@ -161,4 +161,11 @@ test('Mixin only', function () {
 
     ok(tmplString === '');
     ok(hello === '<div></div>');
+});
+
+test('Glob produces templatizer functions', function () {
+    equal(typeof glob.templatizer.otherfolder.deepnested.deeptweet, 'function');
+    equal(typeof glob.templatizer.otherfolder.nestedMixin, 'function');
+    equal(typeof glob.templatizer.usersMixins, 'function');
+    equal(glob.templatizer['404'](), '<div class="page-404">404!</div>');
 });

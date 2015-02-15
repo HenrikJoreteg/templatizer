@@ -4,6 +4,7 @@
 var dontRemoveMixins = {};
 var unaltered = {};
 var multipleDirs = {};
+var glob = {};
 var app = { nested: {}, isBoolean: true };
 
 var globalError1 = 'templatizer: window["app"]["isBoolean"] does not exist or is not an object';
