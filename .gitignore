@@ -29,3 +29,4 @@ node_modules
 # Custom
 test/tests-bundle.js
 test/underscore.js
+.DS_Store
