@@ -21,9 +21,9 @@
     "falafel": "^0.3.1",
     "glob": "^4.3.5",
     "jade": "^1.7.0",
+    "lodash": "^3.2.0",
     "minimist": "^0.1.0",
     "uglify-js": "^2.4.0",
-    "underscore": "^1.5.1",
     "walkdir": "0.0.7"
   },
   "devDependencies": {
@@ -34,6 +34,7 @@
     "phantomjs": "^1.9.7-15",
     "precommit-hook": "^1.0.7",
     "testee": "^0.1.1",
+    "underscore": "^1.7.0",
     "yetify": "0.1.0"
   },
   "homepage": "https://github.com/HenrikJoreteg/templatizer",
@@ -49,13 +50,13 @@
     "url": "https://github.com/HenrikJoreteg/templatizer.git"
   },
   "scripts": {
+    "benchmark": "node benchmark/speedtest.js",
+    "browserify": "./node_modules/.bin/browserify test/browserify-test.js > test/tests-bundle.js",
+    "build": "npm run copy-runtime && node build.js",
     "copy-runtime": "cp node_modules/jade/lib/runtime.js jaderuntime.js",
     "copy-underscore": "cp node_modules/underscore/underscore.js test/underscore.js",
-    "benchmark": "node benchmark/speedtest.js",
-    "build": "npm run copy-runtime && node build.js",
-    "browserify": "./node_modules/.bin/browserify test/browserify-test.js > test/tests-bundle.js",
     "setup-test": "npm run build && npm run browserify && npm run copy-underscore",
-    "test": "npm run setup-test && testee test/index.html",
-    "start": "npm run setup-test && http-server -p 3003 test/"
+    "start": "npm run setup-test && http-server -p 3003 test/",
+    "test": "npm run setup-test && testee test/index.html"
   }
 }
