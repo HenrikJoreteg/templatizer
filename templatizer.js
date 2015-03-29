@@ -29,6 +29,8 @@ module.exports = function (templateDirectories, outputFile, options) {
     _.defaults(options, {
         dontTransformMixins: false,
         dontRemoveMixins: false,
+        amdDependencies: [],
+        inlineJadeRuntime: true,
         jade: {},
         namespace: '' // No namespace means 'window'
     });
@@ -36,6 +38,14 @@ module.exports = function (templateDirectories, outputFile, options) {
     if (typeof templateDirectories === "string") {
         templateDirectories = glob.sync(templateDirectories);
     }
+
+    var amdModuleDependencies = '';
+    var amdDependencies = '';
+
+    if(_.isArray(options.amdDependencies) && !_.isEmpty(options.amdDependencies)) {
+    	amdModuleDependencies = "'" + options.amdDependencies.join("','") + "'";
+    	amdDependencies = options.amdDependencies.toString();
+    } 
 
     var namespace = _.isString(options.namespace) ? options.namespace : '';
     var folders = [];
@@ -155,12 +165,17 @@ module.exports = function (templateDirectories, outputFile, options) {
         output += mixins.join('\n');
     });
 
+    if(!options.inlineJadeRuntime)
+    	wrappedJade = '';
+    
     var indentOutput = output.split('\n').map(function (l) { return l ? '    ' + l : l; }).join('\n');
     var finalOutput = outputTemplate
         .replace(/\{\{namespace\}\}/g, namespace)
         .replace(/\{\{internalNamespace\}\}/g, internalNamespace)
         .replace('{{jade}}', wrappedJade)
-        .replace('{{code}}', indentOutput);
+        .replace('{{code}}', indentOutput)
+        .replace('{{amdModuleDependencies}}', amdModuleDependencies)
+        .replace('{{amdDependencies}}', amdDependencies);
 
     if (outputFile) fs.writeFileSync(outputFile, finalOutput);
 
