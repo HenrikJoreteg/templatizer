@@ -27,6 +27,7 @@ build/Release
 node_modules
 
 # Custom
-test/tests-bundle.js
+test/tests-browserify-bundle.js
 test/underscore.js
+test/require.js
 .DS_Store

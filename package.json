@@ -52,13 +52,13 @@
   },
   "scripts": {
     "benchmark": "node benchmark/speedtest.js",
-    "browserify": "./node_modules/.bin/browserify test/browserify-test.js > test/tests-bundle.js",
+    "browserify": "./node_modules/.bin/browserify test/tests-browserify.js > test/tests-browserify-bundle.js",
     "build": "npm run copy-runtime && node build.js",
     "copy-runtime": "cp node_modules/jade/lib/runtime.js jaderuntime.js",
     "copy-underscore": "cp node_modules/underscore/underscore.js test/underscore.js",
-    "setup-test": "npm run build && npm run browserify && npm run copy-underscore",
+    "copy-require": "cp node_modules/requirejs/require.js test/require.js",
+    "setup-test": "npm run build && npm run browserify && npm run copy-underscore && npm run copy-require",
     "start": "npm run setup-test && http-server -p 3003 test/",
-    "test": "npm run setup-test && testee test/index.html",
-    "amd-test": "cp node_modules/requirejs/require.js test/amdtests && npm run setup-test && http-server -p 3003 test/"
+    "test": "npm run setup-test && testee test/index.html"
   }
 }
