@@ -86,9 +86,8 @@ test("Test for nested mixins", function () {
 test("Test that simplified templates have the same content: Issue #31", function () {
     var regular = templatizer['404withVars'],
         simple = templatizer['404'];
-
     ok(regular() === simple());
-    ok(regular({content: 'test'}) !== simple());
+    ok(regular({value: 'test'}) !== simple());
 });
 
 test("Test that templates work with jade global option", function () {

@@ -1,6 +1,6 @@
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define([], factory);
+        define([{{amdModuleDependencies}}], factory);
     } else if (typeof exports === 'object') {
         module.exports = factory();
     } else if (typeof root{{namespace}} === 'undefined' || root{{namespace}} !== Object(root{{namespace}})) {
@@ -8,8 +8,8 @@
     } else {
         root{{namespace}}.{{internalNamespace}} = factory();
     }
-}(this, function () {
-    {{jade}}
+}(this, function ({{amdDependencies}}) {
+    {{jade}} 
 
     var {{internalNamespace}} = {};
 {{code}}

@@ -4,7 +4,7 @@ var outputPath = path.resolve(__dirname, 'test/builtTemplates');
 var tmplPath = path.resolve(__dirname, 'test/templates');
 var tmplPath2 = path.resolve(__dirname, 'test/templates2');
 var globPath = path.resolve(__dirname, 'test/templates') + '/*.jade';
-
+var amdTmplPath = path.resolve(__dirname, 'test/amdtemplates');
 
 templatizer(tmplPath, path.resolve(outputPath, 'no_mixins.js'), {
     dontTransformMixins: true,
@@ -36,4 +36,9 @@ templatizer(tmplPath, path.resolve(outputPath, 'templates.js'));
 
 templatizer(globPath, path.resolve(outputPath, 'glob.js'), {
     namespace: 'glob'
+});
+
+templatizer(amdTmplPath, path.resolve(__dirname, 'test/amdtests/amdtemplates.js'), {
+    amdDependencies: ['module1'],
+    inlineJadeRuntime: true
 });

@@ -20,7 +20,7 @@
     "esprima": "^1.2.1",
     "falafel": "^0.3.1",
     "glob": "^4.3.5",
-    "jade": "^1.7.0",
+    "jade": "^1.9.2",
     "lodash": "^3.2.0",
     "minimist": "^0.1.0",
     "uglify-js": "^2.4.0",
@@ -33,6 +33,7 @@
     "jshint": "^2.5.0",
     "phantomjs": "^1.9.7-15",
     "precommit-hook": "^1.0.7",
+    "requirejs": "^2.1.16",
     "testee": "^0.1.1",
     "underscore": "^1.7.0",
     "yetify": "0.1.0"
@@ -57,6 +58,7 @@
     "copy-underscore": "cp node_modules/underscore/underscore.js test/underscore.js",
     "setup-test": "npm run build && npm run browserify && npm run copy-underscore",
     "start": "npm run setup-test && http-server -p 3003 test/",
-    "test": "npm run setup-test && testee test/index.html"
+    "test": "npm run setup-test && testee test/index.html",
+    "amd-test": "cp node_modules/requirejs/require.js test/amdtests && npm run setup-test && http-server -p 3003 test/"
   }
 }
