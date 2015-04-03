@@ -40,9 +40,9 @@
   },
   "homepage": "https://github.com/HenrikJoreteg/templatizer",
   "keywords": [
-    "templates",
     "browser",
-    "jade"
+    "jade",
+    "templates"
   ],
   "license": "MIT",
   "main": "templatizer.js",
@@ -51,13 +51,13 @@
     "url": "https://github.com/HenrikJoreteg/templatizer.git"
   },
   "scripts": {
-    "lint": "jshint .",
     "benchmark": "node benchmark/speedtest.js",
     "browserify": "./node_modules/.bin/browserify test/tests-browserify.js > test/tests-browserify-bundle.js",
     "build": "npm run copy-runtime && node build.js",
+    "copy-require": "cp node_modules/requirejs/require.js test/require.js",
     "copy-runtime": "cp node_modules/jade/lib/runtime.js jaderuntime.js",
     "copy-underscore": "cp node_modules/underscore/underscore.js test/underscore.js",
-    "copy-require": "cp node_modules/requirejs/require.js test/require.js",
+    "lint": "jshint .",
     "setup-test": "npm run build && npm run browserify && npm run copy-underscore && npm run copy-require",
     "start": "npm run setup-test && http-server -p 3003 test/",
     "test": "npm run setup-test && testee test/index.html"
