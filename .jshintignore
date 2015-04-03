@@ -1,8 +1,9 @@
 node_modules
 test/builtTemplates
-test/tests-bundle.js
+test/tests-browserify-bundle.js
 test/underscore.js
 test/qunit.js
+test/require.js
 benchmark/icanhaz.js
 jaderuntime.js
 output_template.js

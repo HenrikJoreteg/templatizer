@@ -51,6 +51,7 @@
     "url": "https://github.com/HenrikJoreteg/templatizer.git"
   },
   "scripts": {
+    "lint": "jshint .",
     "benchmark": "node benchmark/speedtest.js",
     "browserify": "./node_modules/.bin/browserify test/tests-browserify.js > test/tests-browserify-bundle.js",
     "build": "npm run copy-runtime && node build.js",

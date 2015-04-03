@@ -38,6 +38,5 @@ templatizer(globPath, path.resolve(outputPath, 'glob.js'), {
 });
 
 templatizer(tmplPath, path.resolve(outputPath, 'amdtemplates.js'), {
-    amdDependencies: ['module1'],
-    inlineJadeRuntime: true
+    amdDependencies: ['module1']
 });
