@@ -45,7 +45,7 @@ module.exports = function (templateDirectories, outputFile, options) {
     if(_.isArray(options.amdDependencies) && !_.isEmpty(options.amdDependencies)) {
     	amdModuleDependencies = "'" + options.amdDependencies.join("','") + "'";
     	amdDependencies = options.amdDependencies.toString();
-    } 
+    }
 
     var namespace = _.isString(options.namespace) ? options.namespace : '';
     var folders = [];
@@ -97,6 +97,10 @@ module.exports = function (templateDirectories, outputFile, options) {
             var item = file.replace(path.resolve(templateDirectory), '').slice(1);
             // Skip hidden files
             if (item.charAt(0) === '.' || item.indexOf(pathSep + '.') !== -1) {
+              return;
+            }
+            // Skip files not matching the initial globbing pattern
+            if (templateDirectories.indexOf(file) === -1) {
               return;
             }
             if (path.extname(item) === '' && path.basename(item).charAt(0) !== '.') {
@@ -167,7 +171,7 @@ module.exports = function (templateDirectories, outputFile, options) {
 
     if(!options.inlineJadeRuntime)
     	wrappedJade = '';
-    
+
     var indentOutput = output.split('\n').map(function (l) { return l ? '    ' + l : l; }).join('\n');
     var finalOutput = outputTemplate
         .replace(/\{\{namespace\}\}/g, namespace)
