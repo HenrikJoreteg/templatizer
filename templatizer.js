@@ -12,6 +12,7 @@ var uglifyjs = require('uglify-js');
 var namedTemplateFn = require('./lib/namedTemplateFn');
 var bracketedName = require('./lib/bracketedName');
 var glob = require('glob');
+var minimatch = require("minimatch");
 
 // Setting dynamicMixins to true will result in
 // all mixins being written to the file
@@ -31,12 +32,14 @@ module.exports = function (templateDirectories, outputFile, options) {
         dontRemoveMixins: false,
         amdDependencies: [],
         inlineJadeRuntime: true,
+        globOptions: {},
         jade: {},
         namespace: '' // No namespace means 'window'
     });
 
+
     if (typeof templateDirectories === "string") {
-        templateDirectories = glob.sync(templateDirectories);
+        templateDirectories = glob.sync(templateDirectories, options.globOptions);
     }
 
     var amdModuleDependencies = '';
@@ -45,7 +48,7 @@ module.exports = function (templateDirectories, outputFile, options) {
     if(_.isArray(options.amdDependencies) && !_.isEmpty(options.amdDependencies)) {
     	amdModuleDependencies = "'" + options.amdDependencies.join("','") + "'";
     	amdDependencies = options.amdDependencies.toString();
-    } 
+    }
 
     var namespace = _.isString(options.namespace) ? options.namespace : '';
     var folders = [];
@@ -99,6 +102,17 @@ module.exports = function (templateDirectories, outputFile, options) {
             if (item.charAt(0) === '.' || item.indexOf(pathSep + '.') !== -1) {
               return;
             }
+
+            // Skip files not matching the initial globbing pattern
+            if(options.globOptions.ignore) {
+                var match = function (ignorePattern) {
+                    return minimatch(file, ignorePattern);
+                };
+                if(options.globOptions.ignore.some(match)) {
+                    return;
+                }
+            }
+
             if (path.extname(item) === '' && path.basename(item).charAt(0) !== '.') {
                 if (folders.indexOf(item) === -1) folders.push(item);
             } else if (path.extname(item) === '.jade') {
@@ -167,7 +181,7 @@ module.exports = function (templateDirectories, outputFile, options) {
 
     if(!options.inlineJadeRuntime)
     	wrappedJade = '';
-    
+
     var indentOutput = output.split('\n').map(function (l) { return l ? '    ' + l : l; }).join('\n');
     var finalOutput = outputTemplate
         .replace(/\{\{namespace\}\}/g, namespace)
