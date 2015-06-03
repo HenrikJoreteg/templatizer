@@ -50,8 +50,7 @@ module.exports = function (templateDirectories, outputFile, options) {
         jade: {},
         amdDependencies: [],
         inlineJadeRuntime: true,
-        globOptions: {},
-        namespace: '' // No namespace means 'window'
+        globOptions: {}
     });
 
 
