@@ -74,9 +74,26 @@ templatizer(__dirname + '/app/**/*.jade', __dirname + '/templates.js');
 
 The third parameter passed to `templatizer` is an options object.
 
-#### `namespace` (string, default `window`)
+#### `namespace` (object, optional)
 
-If you are using templatizer as a global in the browser (without node, requirejs, browserify, or something similar) by default it will attach itself to `window`. Using `namespace` you can attach it to a different global object. For example:
+If you are using templatizer as a global in the browser (without requirejs, browserify, or something similar) by default your templates will be available at `window.templatizer`. Using `namespace` you can attach it to a different global object or rename the property it attaches to.
+
+#### `namespace.parent` (string, default `window`)
+
+This is the name of the object where you want to attach your templates.
+
+#### `namespace.defineParent` (boolean, default `false`)
+
+If this option is `true` and `namespace.parent` does not exist, it will be created. By default if `namespace.parent` does not exist, templatizer will throw an error like this: `templatizer: window.app does not exist or is not an object`.
+
+#### `namespace.name` (string, default `templatizer`)
+
+This is the name of the property on `namespace.parent` where your templates will be attached.
+
+#### Shorthand
+
+If all you want is to attach the `templatizer` object to an already created global variable, then you can just make `namespace` the name of the object where it will attach:
+
 
 ```js
 templatizer(templatesDir, 'templates.js', {
