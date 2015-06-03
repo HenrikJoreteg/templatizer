@@ -1,4 +1,4 @@
-/* globals test, ok, templatizer, unaltered, multipleDirs, dontRemoveMixins, app, app2, _, globalErrorCount */
+/* globals test, ok, equal, templatizer, unaltered, multipleDirs, dontRemoveMixins, app, app2, _, globalErrorCount, glob, negativeglob */
 
 var data = {
     users: [{
@@ -20,7 +20,7 @@ test("Test mixins", function () {
     var users = templatizer.usersMixins({users: data.users});
     var user_li = templatizer.usersMixins.user_li(data.users[0], 0);
     var user_a = templatizer.usersMixins.user_a(data.users[0], 0);
-    
+
     var _users = '<ul>';
     for (var i = 0, m = data.users.length; i < m; i++) {
         _users += templatizer.usersMixins.user_li(data.users[i], i);
@@ -41,7 +41,7 @@ test("Test calling templates with different context", function () {
     var users = usersObj.template({users: data.users});
     var user_li = user_liObj.template(data.users[0], 0);
     var user_a = user_aObj.template(data.users[0], 0);
-    
+
     var _users = '<ul>';
     for (var i = 0, m = data.users.length; i < m; i++) {
         _users += templatizer.usersMixins.user_li(data.users[i], i);
@@ -86,9 +86,8 @@ test("Test for nested mixins", function () {
 test("Test that simplified templates have the same content: Issue #31", function () {
     var regular = templatizer['404withVars'],
         simple = templatizer['404'];
-
     ok(regular() === simple());
-    ok(regular({content: 'test'}) !== simple());
+    ok(regular({value: 'test'}) !== simple());
 });
 
 test("Test that templates work with jade global option", function () {
@@ -166,4 +165,18 @@ test('Mixin only', function () {
 test('Parent namespace and module namespace will be created and not throw an error if option is specified', function () {
     var userString = app2.my_templates.users(data);
     ok(userString == '<ul><li>larry</li><li>curly</li><li>moe</li></ul>');
+});
+
+test('Glob produces templatizer functions', function () {
+    equal(typeof glob.templatizer.otherfolder.deepnested.deeptweet, 'function');
+    equal(typeof glob.templatizer.otherfolder.nestedMixin, 'function');
+    equal(typeof glob.templatizer.usersMixins, 'function');
+    equal(glob.templatizer['404'](), '<div class="page-404">404!</div>');
+});
+
+test('Negative Glob doesnt produce matching templatizer functions', function () {
+    equal(typeof negativeglob.templatizer.otherfolder.deepnested.deeptweet, 'function');
+    equal(typeof negativeglob.templatizer.otherfolder.nestedMixin, 'function');
+    equal(typeof negativeglob.templatizer.users, 'undefined');
+    equal(typeof negativeglob.templatizer.usersMixins, 'undefined');
 });

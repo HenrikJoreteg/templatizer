@@ -4,6 +4,8 @@
 var dontRemoveMixins = {};
 var unaltered = {};
 var multipleDirs = {};
+var glob = {};
+var negativeglob = {};
 var app = { nested: {}, isBoolean: true };
 
 var globalError1 = 'templatizer: window["app"]["isBoolean"] does not exist or is not an object';
@@ -15,7 +17,6 @@ window.onerror = function (errorMsg, url, lineNumber, columnNumber, err) {
     globalErrorCount++;
 
     var isExpected = (err.message === globalError1 || err.message === globalError2);
-
     test('global error ' + globalErrorCount, function () {
         ok(isExpected);
     });

@@ -1,5 +1,9 @@
 # templatizer.js
 
+[![Build Status](https://travis-ci.org/HenrikJoreteg/templatizer.png?branch=master)](https://travis-ci.org/HenrikJoreteg/templatizer)
+
+[![NPM](https://nodei.co/npm/templatizer.png?downloads=true)](https://nodei.co/npm/templatizer/)
+
 Simple solution for compiling jade templates into vanilla JS functions for blazin' fast client-side use.
 
 ## What is this?
@@ -58,6 +62,14 @@ exports.myfolder.nestedTemplate = function () {} // the template function
 
 The awesome thing is... there are no external dependencies because they're just functions at this point. Crazy fast, SO MUCH WIN!!!!
 
+### Glob Paths
+
+The directory path can also be a [glob](https://github.com/isaacs/node-glob) instead that can be used to match `*.jade` files across multiple directories. For example:
+
+```js
+templatizer(__dirname + '/app/**/*.jade', __dirname + '/templates.js');
+```
+
 ### Options
 
 The third parameter passed to `templatizer` is an options object.
@@ -102,6 +114,14 @@ templatizer(templatesDir, 'templates.js', {
 
 By default `jade` will not compile any mixins which aren't being called from the file they were created in. This is usually a very good thing, since keeps file sizes down. But in some cases (especially when using the [mixin support](#mixin-support) functionality), you may want to create mixins and call them from other places in your code or other files. Setting this option to `true` will keep all mixins in the compiled source.
 
+#### `inlineJadeRuntime` (boolean, default true)
+
+By default the jade runtime will be included into the generated template javascript file. In order minimize the file size you can set this parameter to false. Instead a `jade` module is expected as amdDependency parameter. Otherwise an error will be thrown.
+
+#### `amdDependencies` (array, default [])
+
+An array of AMD module dependencies you want to pass in to the generated templates javascript file. 
+
 #### `jade` (object, default `{}`)
 
 `jade` is an object which will be passed directly to `jade.compile()`. See the [Jade API documentation](http://jade-lang.com/api/) for what options are available.
@@ -116,6 +136,10 @@ templatizer(templatesDir, outputFile, {
     }
 });
 ```
+
+#### `globOptions` (object, default `{}`)
+
+`globOptions` will be passed directly to `node-glob`. See the [API docs](https://github.com/isaacs/node-glob#options) for available options.
 
 ### Mixin Support
 

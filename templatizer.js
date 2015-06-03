@@ -6,9 +6,11 @@ var renameJadeFn = require('./lib/renameJadeFn');
 var walkdir = require('walkdir');
 var path = require('path');
 var util = require('util');
-var _ = require('underscore');
+var _ = require('lodash');
 var fs = require('fs');
 var uglifyjs = require('uglify-js');
+var glob = require('glob');
+var minimatch = require('minimatch');
 var namedTemplateFn = require('./lib/namedTemplateFn');
 var bracketedName = require('./lib/bracketedName');
 var indent = function (output, space) {
@@ -45,13 +47,26 @@ module.exports = function (templateDirectories, outputFile, options) {
     _.defaults(options, {
         dontTransformMixins: false,
         dontRemoveMixins: false,
-        jade: {}
+        jade: {},
+        amdDependencies: [],
+        inlineJadeRuntime: true,
+        globOptions: {},
+        namespace: '' // No namespace means 'window'
     });
 
+
     if (typeof templateDirectories === "string") {
-        templateDirectories = [templateDirectories];
+        templateDirectories = glob.sync(templateDirectories, options.globOptions);
     }
-    
+
+    var amdModuleDependencies = '';
+    var amdDependencies = '';
+
+    if(_.isArray(options.amdDependencies) && !_.isEmpty(options.amdDependencies)) {
+    	amdModuleDependencies = "'" + options.amdDependencies.join("','") + "'";
+    	amdDependencies = options.amdDependencies.toString();
+    }
+
     var namespace = _.isString(options.namespace.parent) ? options.namespace.parent : '';
     var folders = [];
     var templates = [];
@@ -84,17 +99,37 @@ module.exports = function (templateDirectories, outputFile, options) {
     };
     _.extend(jadeCompileOptions, options.jade);
 
-    templateDirectories = _.map(templateDirectories, function (templateDirectory) {
+    templateDirectories = _.chain(templateDirectories)
+   .map(function (templateDirectory) {
+        if(path.extname(templateDirectory).length > 1) {
+            // Remove filename and ext
+            return path.dirname(templateDirectory).replace(pathSepRegExp, pathSep);
+        }
         return templateDirectory.replace(pathSepRegExp, pathSep);
-    });
-
-    templateDirectories.forEach(function (templateDirectory) {
+    })
+   .uniq()
+   .each(function (templateDirectory) {
         if (!fs.existsSync(templateDirectory)) {
             throw new Error('Template directory ' + templateDirectory + ' does not exist.');
         }
 
         walkdir.sync(templateDirectory).forEach(function (file) {
             var item = file.replace(path.resolve(templateDirectory), '').slice(1);
+            // Skip hidden files
+            if (item.charAt(0) === '.' || item.indexOf(pathSep + '.') !== -1) {
+              return;
+            }
+
+            // Skip files not matching the initial globbing pattern
+            if(options.globOptions.ignore) {
+                var match = function (ignorePattern) {
+                    return minimatch(file, ignorePattern);
+                };
+                if(options.globOptions.ignore.some(match)) {
+                    return;
+                }
+            }
+
             if (path.extname(item) === '' && path.basename(item).charAt(0) !== '.') {
                 if (folders.indexOf(item) === -1) folders.push(item);
             } else if (path.extname(item) === '.jade') {
@@ -106,12 +141,13 @@ module.exports = function (templateDirectories, outputFile, options) {
                 templates.push(templateDirectory + pathSep + item);
             }
         });
+    })
+   .value();
 
-        folders = _.sortBy(folders, function (folder) {
-            var arr = folder.split(pathSep);
-            return arr.length;
-        });
-    });
+   folders = _.sortBy(folders, function (folder) {
+       var arr = folder.split(pathSep);
+       return arr.length;
+   });
 
     output += folders.map(function (folder) {
         return options.namespace.name + bracketedName(folder.split(pathSep)) + ' = {};';
@@ -169,12 +205,18 @@ module.exports = function (templateDirectories, outputFile, options) {
         "}"
     ].join('\n');
 
+    if(!options.inlineJadeRuntime) {
+        wrappedJade = '';
+    }
+
     var finalOutput = outputTemplate
         .replace('{{checkParent}}', indent(checkParent, 8))
         .replace(/\{\{namespace\}\}/g, namespace)
         .replace(/\{\{internalNamespace\}\}/g, options.namespace.name)
         .replace('{{jade}}', wrappedJade)
-        .replace('{{code}}', indentOutput);
+        .replace('{{code}}', indentOutput)
+        .replace('{{amdModuleDependencies}}', amdModuleDependencies)
+        .replace('{{amdDependencies}}', amdDependencies);
 
     if (outputFile) fs.writeFileSync(outputFile, finalOutput);
 
