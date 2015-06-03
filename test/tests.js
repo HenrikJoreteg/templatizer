@@ -169,7 +169,6 @@ test('Glob produces templatizer functions', function () {
     equal(glob.templatizer['404'](), '<div class="page-404">404!</div>');
 });
 
-
 test('Negative Glob doesnt produce matching templatizer functions', function () {
     equal(typeof negativeglob.templatizer.otherfolder.deepnested.deeptweet, 'function');
     equal(typeof negativeglob.templatizer.otherfolder.nestedMixin, 'function');

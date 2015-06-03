@@ -120,6 +120,10 @@ templatizer(templatesDir, outputFile, {
 });
 ```
 
+#### `globOptions` (object, default `{}`)
+
+`globOptions` will be passed directly to `node-glob`. See the [API docs](https://github.com/isaacs/node-glob#options) for available options.
+
 ### Mixin Support
 
 Jade has a feature called `mixins` which when compiled get treated as function declarations within the compiled function. Templatizer pulls these out of the compiled function and places them on the namespace of the parent function. For example:
