@@ -4,6 +4,7 @@ var outputPath = path.resolve(__dirname, 'test/builtTemplates');
 var tmplPath = path.resolve(__dirname, 'test/templates');
 var tmplPath2 = path.resolve(__dirname, 'test/templates2');
 var globPath = path.resolve(__dirname, 'test/templates') + '/*.jade';
+var negativeGlobPath = path.resolve(__dirname, 'test/templates') + '/*.jade';
 
 templatizer(tmplPath, path.resolve(outputPath, 'no_mixins.js'), {
     dontTransformMixins: true,
@@ -37,6 +38,14 @@ templatizer(globPath, path.resolve(outputPath, 'glob.js'), {
     namespace: 'glob'
 });
 
+templatizer(negativeGlobPath, path.resolve(outputPath, 'negativeglob.js'), {
+    namespace: 'negativeglob',
+    globOptions: {
+        ignore: ['**/users*']
+    }
+});
+
 templatizer(tmplPath, path.resolve(outputPath, 'amdtemplates.js'), {
     amdDependencies: ['module1']
 });
+
