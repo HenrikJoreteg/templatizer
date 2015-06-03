@@ -62,8 +62,8 @@ module.exports = function (templateDirectories, outputFile, options) {
     var amdDependencies = '';
 
     if(_.isArray(options.amdDependencies) && !_.isEmpty(options.amdDependencies)) {
-    	amdModuleDependencies = "'" + options.amdDependencies.join("','") + "'";
-    	amdDependencies = options.amdDependencies.toString();
+        amdModuleDependencies = "'" + options.amdDependencies.join("','") + "'";
+        amdDependencies = options.amdDependencies.toString();
     }
 
     var namespace = _.isString(options.namespace.parent) ? options.namespace.parent : '';
