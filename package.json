@@ -20,7 +20,7 @@
     "esprima": "^1.2.1",
     "falafel": "^0.3.1",
     "glob": "^4.3.5",
-    "jade": "1.10.0",
+    "jade": "^1.11.0",
     "lodash": "^3.2.0",
     "minimatch": "^2.0.7",
     "minimist": "^0.1.0",
