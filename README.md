@@ -175,6 +175,17 @@ Templatizer comes with a bin script to use from makefiles/package.json scripts/e
 $ templatizer -d path/to/templates -o /path/to/output/templates.js
 ```
 
+## Client side usage
+Simple pass in data objects to render
+```js
+templatizer.Template.({ title: ..., description: ...});
+```
+Use with jade &attributes(attributes) syntax
+```js
+templatizer.Template.call({ attributes:{ class: ..., value: ...}} , data);
+templatizer.Template.apply({ attributes:{ class: ..., value: ...}} , [data]);
+```
+
 ## Tests
 
 Run `npm test` to run the tests (you'll need phantomjs installed). You can also run the tests in your browser with `npm run browser-test` and going to [http://localhost:3003](http://localhost:3003).
