@@ -167,23 +167,25 @@ exports.users.user = function (user) {}
 
 This is helpful as it allows you to call `users()` to create your list and then `users.user()` to render just a single item in the list.
 
+## Passing client side data to templates
+
+Simply pass in data objects to make those variables available within the template:
+```js
+templatizer.Template({ title: ..., description: ...});
+```
+
+Using jade's [`&attributes(attributes)`](http://jade-lang.com/reference/attributes/#and-attributes) syntax:
+```js
+templatizer.Template.call({ attributes:{ class: ..., value: ...}} , data);
+templatizer.Template.apply({ attributes:{ class: ..., value: ...}} , [data]);
+```
+
 ## CLI
 
 Templatizer comes with a bin script to use from makefiles/package.json scripts/etc, it works like this:
 
 ```
 $ templatizer -d path/to/templates -o /path/to/output/templates.js
-```
-
-## Client side usage
-Simple pass in data objects to render
-```js
-templatizer.Template.({ title: ..., description: ...});
-```
-Use with jade &attributes(attributes) syntax
-```js
-templatizer.Template.call({ attributes:{ class: ..., value: ...}} , data);
-templatizer.Template.apply({ attributes:{ class: ..., value: ...}} , [data]);
 ```
 
 ## Tests
