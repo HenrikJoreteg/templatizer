@@ -180,3 +180,20 @@ test('Negative Glob doesnt produce matching templatizer functions', function () 
     equal(typeof negativeglob.templatizer.users, 'undefined');
     equal(typeof negativeglob.templatizer.usersMixins, 'undefined');
 });
+
+
+test('Dynamic mixins can be called', function () {
+    equal(typeof templatizer.dynamicMixin.test1, 'function');
+    equal(typeof templatizer.dynamicMixin.test2, 'function');
+
+    equal(typeof unaltered.templatizer.dynamicMixin.test1, 'undefined');
+    equal(typeof unaltered.templatizer.dynamicMixin.test2, 'undefined');
+
+    equal(templatizer.dynamicMixin({value: '1'}), '<p><span>One</span></p>');
+    equal(unaltered.templatizer.dynamicMixin({value: '1'}), '<p><span>One</span></p>');
+    equal(templatizer.dynamicMixin({value: '2'}), '<p><span>Two</span></p>');
+    equal(unaltered.templatizer.dynamicMixin({value: '2'}), '<p><span>Two</span></p>');
+
+    equal(templatizer.dynamicMixin.test1(), '<span>One</span>');
+    equal(templatizer.dynamicMixin.test2(), '<span>Two</span>');
+});
