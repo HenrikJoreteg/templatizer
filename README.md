@@ -158,6 +158,8 @@ This is helpful as it allows you to call `users()` to create your list and then 
 
 If the last parameter is a function, it will be treated as a callback. The callback will always have the signature `function (err, templates) {}`. Use this to respond to errors or to do something else with the source of the compiled templates file.
 
+This can be helpful if you don't want to write the compiled templates directly to a file, and you want to make modifications first. 
+
 ### Argument order
 
 Both the `outputFile` string and `options` object are optional.
