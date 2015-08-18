@@ -70,9 +70,8 @@ test('Built other options without errors', function (t) {
         [i(), o('templates'), {transformMixins: true}],
         [[i(), i('templates2')], o('multiple_dirs')],
         [i('templates', true), o('glob')],
-        [i(), o('dont_remove_mixins'), { dontRemoveMixins: true, transformMixins: true }],
         [i(), o('no_mixins')],
-        [i(), o('negativeglob'), { globOptions: { ignore: ['**/users*'] } }],
+        [i('templates', true), o('negativeglob'), {globOptions: {ignore: ['**/users*']}}],
     ], function (args, cb) {
         templatizer.apply(null, [].concat(args).concat(function (err, templates) {
             t.notOk(err);

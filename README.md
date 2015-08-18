@@ -122,10 +122,6 @@ templatizer(templatesDir, outputFile, {
 
 `globOptions` will be passed directly to `node-glob`. See the [API docs](https://github.com/isaacs/node-glob#options) for available options.
 
-##### `dontRemoveMixins` (boolean, default false)
-
-By default `jade` will not compile any mixins which aren't being called from the file they were created in. This is usually a very good thing, since keeps file sizes down. But in some cases (especially when using the `transformMixins: true` functionality), you may want to create mixins and call them from other places in your code or other files. Setting this option to `true` will keep all mixins in the compiled source.
-
 ##### `transformMixins` (boolean, default false)
 
 Set this to `true` to turn on `mixin` AST transformations.
@@ -211,7 +207,7 @@ Run `npm test` to run the tests (you'll need phantomjs installed). You can also 
   - **Compiled templates are no longer UMD.** The compiled templates are now only a CommonJS module. Global and AMD support have been removed. If you want to consume this file as an AMD module or global, you'll need to do that as part of a build step in your project. Try the [`require.js` conversion tool](http://requirejs.org/docs/commonjs.html#autoconversion) or [`amd-wrap`](https://www.npmjs.com/package/amd-wrap) for AMD compatibility or [creating a standalone build with `browserify`](http://www.forbeslindesay.co.uk/post/46324645400/standalone-browserify-builds) for global builds.
   - **`jade-runtime` is no longer inlined.** `jade-runtime` is now installed as a `peerDependency` and required from the compiled templates file.
   - **`namespace` options have been removed.** Since the compiled templates no longer have the option to attach to a global variable, the `namespace` options are no longer relevant.
-  - **Mixin transformation is now off by default.** Mixin transformation can be turned back on by using the option `transformMixins: true`.
+  - **Mixin transformation is now off by default.** Mixin transformation can be turned back on by using the option `transformMixins: true`. Also, the dynamic mixin compiler is no automatically turned on if opting-in to mixin transformation.
 
 ## License
 

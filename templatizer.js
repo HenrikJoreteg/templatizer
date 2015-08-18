@@ -67,7 +67,6 @@ module.exports = function (input, output, options, done) {
 
     _.defaults(options, {
         transformMixins: false,
-        dontRemoveMixins: false,
         jade: {},
         globOptions: {}
     });
@@ -92,7 +91,7 @@ module.exports = function (input, output, options, done) {
         function (matches, cb) {
              var directories = _.chain(matches)
             .map(function (templateDirectory) {
-                 if(path.extname(templateDirectory).length > 1) {
+                 if (path.extname(templateDirectory).length > 1) {
                      // Remove filename and ext
                      return path.dirname(templateDirectory).replace(pathSepRegExp, pathSep);
                  }
@@ -196,7 +195,9 @@ module.exports = function (input, output, options, done) {
                             return dirname.substring(1).replace(pathSepRegExp, '.');
                         }();
 
-                        if (options.dontRemoveMixins) {
+                        // If we are transforming mixins then use the dynamic
+                        // compiler so unused mixins are never removed
+                        if (options.transformMixins) {
                             jadeCompileOptions.compiler = DynamicMixinsCompiler;
                         }
                         jadeCompileOptions.filename = item;

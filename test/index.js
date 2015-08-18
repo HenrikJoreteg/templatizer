@@ -3,7 +3,6 @@ var test = require('tape');
 var templatizer = require('./builtTemplates/templates.js');
 var unaltered = require('./builtTemplates/no_mixins');
 var multipleDirs = require('./builtTemplates/multiple_dirs');
-var dontRemoveMixins = require('./builtTemplates/dont_remove_mixins');
 var glob = require('./builtTemplates/glob');
 var negativeglob = require('./builtTemplates/negativeglob');
 
@@ -147,17 +146,15 @@ test('Test mixin being called with (nested) array item argument', function (t) {
 });
 
 test('Mixins can be created even if uncalled in the file', function (t) {
-    var ucm = templatizer.uncalledMixin;
-    var drm = dontRemoveMixins.uncalledMixin;
+    var ucm = unaltered.uncalledMixin;
+    var drm = templatizer.uncalledMixin;
 
-    t.ok(typeof ucm.test === 'function');
+    t.ok(typeof ucm.test === 'undefined');
     t.ok(typeof ucm.uncalled_test === 'undefined');
     t.ok(typeof drm.test === 'function');
     t.ok(typeof drm.uncalled_test === 'function');
 
     t.ok(ucm() === drm());
-    t.ok(ucm.test('test', 0) === drm.test('test', 0));
-    t.ok(drm.test('test', 0) === drm.uncalled_test('test', 0));
 
     t.end();
 });
