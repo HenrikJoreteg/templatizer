@@ -26,9 +26,6 @@ var complexData = {
 var ITERATIONS = 100000;
 var i = ITERATIONS;
 
-// build our demo file
-require('../build');
-
 console.log('\nSetting up templatizer'.bold);
 console.log('1.'.grey + ' built: demo_output.js, demo_output_mixins.js');
 console.log('2.'.grey + ' now reading in generated files');
