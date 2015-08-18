@@ -101,7 +101,7 @@ templatizer(__dirname + '/app/**/*.jade', ...);
 
 Optionally build the compiled templates to a file. The output will be a CommonJS module. If you don't build to a file, you'll want to supply a callback to do something else with the compiled templates.
 
-### Options
+### Options (object)
 
 ##### `jade` (object, default `{}`)
 
@@ -135,11 +135,11 @@ Jade has a feature called `mixins` which when compiled get treated as function d
 ```jade
 // users.jade
 ul
-    each user in users
-        mixin user(user)
+  each user in users
+    mixin user(user)
 
 mixin user(user)
-    // Jade mixin content
+  // Jade mixin content
 ```
 
 Templatizer will compile this as
@@ -154,7 +154,7 @@ exports.users.user = function (user) {}
 
 This is helpful as it allows you to call `users()` to create your list and then `users.user()` to render just a single item in the list.
 
-### Callback
+### Callback (function)
 
 If the last parameter is a function, it will be treated as a callback. The callback will always have the signature `function (err, templates) {}`. Use this to respond to errors or to do something else with the source of the compiled templates file.
 
@@ -205,11 +205,11 @@ Run `npm test` to run the tests (you'll need phantomjs installed). You can also 
 ## Changelog
 
 - 2.0.0 Breaking Changes:
-  - **`templatizer` is now async.** Pass a callback as the last parameter with the signature `function (err, templates) {}` to know when compilation is complete.
-  - **Compiled templates are no longer UMD.** The compiled templates are now only a CommonJS module. Global and AMD support has been removed. If you want to consume this file as an AMD module or global, you'll need to do that as part of a build step in your project. Try the [`require.js` conversion tool](http://requirejs.org/docs/commonjs.html#autoconversion) for AMD compatibility or [creating a standalone build with `browserify`](http://www.forbeslindesay.co.uk/post/46324645400/standalone-browserify-builds) for global builds.
-  - **`jade-runtime` is no longer inlined.** `jade-runtime` is now installed as a `peerDependency`.
-  - **`namespace` options have been removed.** Since the compiled template now users CommonJS by default and no longer has the option to attach to the `window` by default, the `namespace` options are no longer relevant.
-  - **`transformMixins` is now off by default.** Mixin transformation can be turned back on by using the option `transformMixins: true`.
+  - **Async API** Pass a callback as the last parameter with the signature `function (err, templates) {}` to know when compilation is complete.
+  - **Compiled templates are no longer UMD.** The compiled templates are now only a CommonJS module. Global and AMD support have been removed. If you want to consume this file as an AMD module or global, you'll need to do that as part of a build step in your project. Try the [`require.js` conversion tool](http://requirejs.org/docs/commonjs.html#autoconversion) for AMD compatibility or [creating a standalone build with `browserify`](http://www.forbeslindesay.co.uk/post/46324645400/standalone-browserify-builds) for global builds.
+  - **`jade-runtime` is no longer inlined.** `jade-runtime` is now installed as a `peerDependency` and required from the compiled templates file.
+  - **`namespace` options have been removed.** Since the compiled templates no longer have the option to attach to a global variable, the `namespace` options are no longer relevant.
+  - **Mixin transformation is now off by default.** Mixin transformation can be turned back on by using the option `transformMixins: true`.
 
 ## License
 
