@@ -24,6 +24,7 @@ test('Can build with just input', function (t) {
         t.ok(!!templates);
         t.ok(typeof templates === 'string');
         t.ok(templates.length > 0);
+        t.ok(templates.indexOf('jade_debug.unshift') === -1);
         t.end();
     });
 });
@@ -35,6 +36,7 @@ test('Can build to a file', function (t) {
         t.notOk(err);
         t.ok(fs.existsSync(o(name)));
         t.ok(templates === templatesFromFile);
+        t.ok(templates.indexOf('jade_debug.unshift') === -1);
         t.end();
     });
 });
