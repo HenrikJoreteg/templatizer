@@ -198,7 +198,7 @@ $ templatizer -d path/to/templates -o /path/to/output/templates.js
 
 ## Tests
 
-Run `npm test` to run the tests (you'll need phantomjs installed). You can also run the tests in your browser with `npm start` and going to [http://localhost:3003/test](http://localhost:3003).
+Run `npm test` to run the tests (you'll need phantomjs installed). You can also run the tests in your browser with `npm start` and going to [http://localhost:3003](http://localhost:3003).
 
 ## Changelog
 
