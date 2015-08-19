@@ -6,6 +6,8 @@
 
 Simple solution for compiling jade templates into vanilla JS functions for blazin' fast client-side use.
 
+**v2 has been released. See the [changelog](#changelog) for breaking changes.**
+
 ## What is this?
 
 Client-side templating is overly complicated, ultimately what you *actually* want is a function you can call from your JS that puts your data in a template. Why should I have to send a bunch of strings with Mustaches `{{}}` or other silly stuff for the client to parse? Ultimately, all I want is a function that I can call with some variable to render the string I want.
@@ -13,6 +15,7 @@ Client-side templating is overly complicated, ultimately what you *actually* wan
 So, the question is, what's a sane way to get to that point? Enter [jade](http://jade-lang.com). Simple, intuitive templating, and happens to be what I use on the server anyway. So... Jade has some awesome stuff for compiling templates into functions. I just built templatizer to make it easy to turn a folder full of jade templates into a CommonJS module that exports all the template functions by whatever their file name.
 
 ## Is it faster?
+
 From my tests it's 6 to 10 times faster than mustache.js with ICanHaz.
 
 ## How do I use it?
@@ -24,9 +27,13 @@ From my tests it's 6 to 10 times faster than mustache.js with ICanHaz.
 ```js
 var templatizer = require('templatizer');
 
-// pass in the template directory and what you want to
-// save the output file as. That's it!
-templatizer(__dirname + '/templates', __dirname + '/demo_output.js', options);
+// pass in the template directory and what you want to save the output file as
+templatizer(
+  __dirname + '/templates',
+  __dirname + '/output.js',
+  options, // Optional
+  function (err, templates) { console.log(err || 'Success!') }
+);
 ```
 
 So a folder like this
@@ -42,87 +49,61 @@ So a folder like this
 Compiles down to a JS file that looks something like this:
 
 ```js
-// here's about 1.6k worth of utils that jade uses to DRY up the template code a bit.
-// Includes some basic shims for Object.keys, etc.
-var jade=function(exports){ ... }
+var jade = require('jade-runtime') // This is a peerDependency
+
+var templates = {};
 
 // a function built from the `user.jade` file
 // that takes your data and returns a string.
-exports.user = function () {}
+templates.user = function () {}
 
 // built from the `app.jade` file
-exports.app = function () {} // the function
+templates.app = function () {} // the function
 
 // folders become nested objects so
 // myfolder/nestedTemplate.jade becomes
-exports.myfolder.nestedTemplate = function () {} // the template function
+templates.myFolder = {};
+templates.myfolder.nestedTemplate = function () {} // the template function
 
-// etc. etc
+module.exports = templates;
 ```
 
-The awesome thing is... there are no external dependencies because they're just functions at this point. Crazy fast, SO MUCH WIN!!!!
+The awesome thing is... they're just functions at this point. Crazy fast, SO MUCH WIN!!!!
 
-### Glob Paths
+## Dependencies
 
-The directory path can also be a [glob](https://github.com/isaacs/node-glob) instead that can be used to match `*.jade` files across multiple directories. For example:
+`templatizer` has `jade-runtime` as a `peerDependency`. In npm 3.x.x peerDependencies will no longer be installed by default.
+
+When this happens, you'll want to run the following `npm install jade-runtime` to install it yourself.
+
+## API
 
 ```js
-templatizer(__dirname + '/app/**/*.jade', __dirname + '/templates.js');
+templatizer(
+  templatesDirectory,
+  outputFile?,
+  options?,
+  function (err, templates) {}
+)
 ```
 
-### Options
+### templatesDirectory (string or array, required)
 
-The third parameter passed to `templatizer` is an options object.
+A string or an array of paths to look for templates.
 
-#### `namespace` (object, optional)
-
-If you are using templatizer as a global in the browser (without requirejs, browserify, or something similar) by default your templates will be available at `window.templatizer`. Using `namespace` you can attach it to a different global object or rename the property it attaches to.
-
-#### `namespace.parent` (string, default `window`)
-
-This is the name of the object where you want to attach your templates.
-
-#### `namespace.defineParent` (boolean, default `false`)
-
-If this option is `true` and `namespace.parent` does not exist, it will be created. By default if `namespace.parent` does not exist, templatizer will throw an error like this: `templatizer: window.app does not exist or is not an object`.
-
-#### `namespace.name` (string, default `templatizer`)
-
-This is the name of the property on `namespace.parent` where your templates will be attached.
-
-#### Shorthand
-
-If all you want is to attach the `templatizer` object to an already created global variable, then you can just make `namespace` the name of the object where it will attach:
-
+The path can also be a [glob](https://github.com/isaacs/node-glob) instead that can be used to match `*.jade` files across multiple directories. For example:
 
 ```js
-templatizer(templatesDir, 'templates.js', {
-    namespace: 'app'
-});
+templatizer(__dirname + '/app/**/*.jade', ...);
 ```
 
-```html
-<script>var app = {};</script>
-<script src="templates.js"></script>
-<script>
-  // Templates will be available on app.templatizer
-  document.body.innerHTML = app.templatizer.body();
-</script>
-```
+### outputFile (string)
 
-#### `dontRemoveMixins` (boolean, default false)
+Optionally build the compiled templates to a file. The output will be a CommonJS module. If you don't build to a file, you'll want to supply a callback to do something else with the compiled templates.
 
-By default `jade` will not compile any mixins which aren't being called from the file they were created in. This is usually a very good thing, since keeps file sizes down. But in some cases (especially when using the [mixin support](#mixin-support) functionality), you may want to create mixins and call them from other places in your code or other files. Setting this option to `true` will keep all mixins in the compiled source.
+### Options (object)
 
-#### `inlineJadeRuntime` (boolean, default true)
-
-By default the jade runtime will be included into the generated template javascript file. In order minimize the file size you can set this parameter to false. Instead a `jade` module is expected as amdDependency parameter. Otherwise an error will be thrown.
-
-#### `amdDependencies` (array, default [])
-
-An array of AMD module dependencies you want to pass in to the generated templates javascript file. 
-
-#### `jade` (object, default `{}`)
+##### `jade` (object, default `{}`)
 
 `jade` is an object which will be passed directly to `jade.compile()`. See the [Jade API documentation](http://jade-lang.com/api/) for what options are available.
 
@@ -137,22 +118,24 @@ templatizer(templatesDir, outputFile, {
 });
 ```
 
-#### `globOptions` (object, default `{}`)
+##### `globOptions` (object, default `{}`)
 
 `globOptions` will be passed directly to `node-glob`. See the [API docs](https://github.com/isaacs/node-glob#options) for available options.
 
-### Mixin Support
+##### `transformMixins` (boolean, default false)
 
-Jade has a feature called `mixins` which when compiled get treated as function declarations within the compiled function. Templatizer pulls these out of the compiled function and places them on the namespace of the parent function. For example:
+Set this to `true` to turn on `mixin` AST transformations.
+
+Jade has a feature called `mixins` which when compiled get treated as function declarations within the compiled function. Templatizer can pull these out of the compiled function and place them on the namespace of the parent function. For example:
 
 ```jade
 // users.jade
 ul
-    each user in users
-        mixin user(user)
+  each user in users
+    mixin user(user)
 
 mixin user(user)
-    // Jade mixin content
+  // Jade mixin content
 ```
 
 Templatizer will compile this as
@@ -166,6 +149,31 @@ exports.users.user = function (user) {}
 ```
 
 This is helpful as it allows you to call `users()` to create your list and then `users.user()` to render just a single item in the list.
+
+### Callback (function)
+
+If the last parameter is a function, it will be treated as a callback. The callback will always have the signature `function (err, templates) {}`. Use this to respond to errors or to do something else with the source of the compiled templates file.
+
+This can be helpful if you don't want to write the compiled templates directly to a file, and you want to make modifications first. 
+
+### Argument order
+
+Both the `outputFile` string and `options` object are optional.
+
+```js
+// Use just the callback to do something else with your templates
+// besides write them to a file
+templatizer(templatesDir, function (err, templates) { });
+
+// Build to a file and do something in the callback
+templatizer(templatesDir, outputFile, function (err, templates) { });
+
+// Use only with options
+templatizer(templatesDir, { /* options */ }, function (err, templates) { });
+
+// Use with options and outputFile
+templatizer(templatesDir, outputFile, { /* options */ }, function (err, templates) { });
+```
 
 ## Passing client side data to templates
 
@@ -190,11 +198,16 @@ $ templatizer -d path/to/templates -o /path/to/output/templates.js
 
 ## Tests
 
-Run `npm test` to run the tests (you'll need phantomjs installed). You can also run the tests in your browser with `npm run browser-test` and going to [http://localhost:3003](http://localhost:3003).
+Run `npm test` to run the tests (you'll need phantomjs installed). You can also run the tests in your browser with `npm start` and going to [http://localhost:3003/test](http://localhost:3003).
 
 ## Changelog
 
-- v0.2.9 [diff](https://github.com/henrikjoreteg/templatizer/compare/v0.2.8...v0.2.9) - Adding path normalize to avoid issues if passing in paths like `/thing/../otherfolder`.
+- 2.0.0 Breaking Changes:
+  - **Async API** Pass a callback as the last parameter with the signature `function (err, templates) {}` to know when compilation is complete.
+  - **Compiled templates are no longer UMD.** The compiled templates are now only a CommonJS module. Global and AMD support have been removed. If you want to consume this file as an AMD module or global, you'll need to do that as part of a build step in your project. Try the [`require.js` conversion tool](http://requirejs.org/docs/commonjs.html#autoconversion) or [`amd-wrap`](https://www.npmjs.com/package/amd-wrap) for AMD compatibility or [creating a standalone build with `browserify`](http://www.forbeslindesay.co.uk/post/46324645400/standalone-browserify-builds) for global builds.
+  - **`jade-runtime` is no longer inlined.** `jade-runtime` is now installed as a `peerDependency` and required from the compiled templates file.
+  - **`namespace` options have been removed.** Since the compiled templates no longer have the option to attach to a global variable, the `namespace` options are no longer relevant.
+  - **Mixin transformation is now off by default.** Mixin transformation can be turned back on by using the option `transformMixins: true`. Also, the dynamic mixin compiler is no automatically turned on if opting-in to mixin transformation.
 
 ## License
 

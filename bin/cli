@@ -39,7 +39,12 @@ directory = path.join(process.cwd(), directory);
 
 if (outfile) {
     outfile = path.join(process.cwd(), outfile);
-    templatizer(directory, outfile);
+    templatizer(directory, outfile, function (err) {
+        if (err) throw err;
+    });
 } else {
-    process.stdout.write(templatizer(directory));
+    templatizer(directory, function (err, templates) {
+        if (err) throw err;
+        process.stdout.write(templates);
+    });
 }

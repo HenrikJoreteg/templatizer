@@ -1,4 +1,5 @@
 var jade = require('jade');
+var async = require('async');
 var beautify = require('./lib/beautify');
 var simplifyTemplate = require('./lib/simplifyTemplate');
 var transformMixins = require('./lib/transformMixins');
@@ -8,14 +9,10 @@ var path = require('path');
 var util = require('util');
 var _ = require('lodash');
 var fs = require('fs');
-var uglifyjs = require('uglify-js');
 var glob = require('glob');
 var minimatch = require('minimatch');
 var namedTemplateFn = require('./lib/namedTemplateFn');
 var bracketedName = require('./lib/bracketedName');
-var indent = function (output, space) {
-    return output.split('\n').map(function (l) { return l ? new Array((space || 4) + 1).join(' ') + l : l; }).join('\n');
-};
 
 // Setting dynamicMixins to true will result in
 // all mixins being written to the file
@@ -25,199 +22,235 @@ function DynamicMixinsCompiler () {
 }
 util.inherits(DynamicMixinsCompiler, jade.Compiler);
 
-module.exports = function (templateDirectories, outputFile, options) {
-    options || (options = {});
-    options.namespace || (options.namespace = {});
+// Our internal namespace
+var NAMESPACE = 'templatizer';
 
-    var namespaceOptions = {
-        parent: '', // defaults to window
-        name: 'templatizer',
-        defineParent: false
-    };
+module.exports = function (input, output, options, done) {
+    var args = arguments;
 
-    // If namespace is a string then just apply it to namespace.parent
-    // for backwards compat
-    if (typeof options.namespace === 'string') {
-        namespaceOptions.parent = options.namespace;
-        options.namespace = namespaceOptions;
-    } else {
-        _.defaults(options.namespace, namespaceOptions);
+    if (args.length === 3) {
+        // input, output, done
+        if (_.isString(args[1]) && _.isFunction(args[2])) {
+            done = args[2];
+            options = null;
+        }
+        // input, options, done
+        else if (_.isObject(args[1]) && _.isFunction(args[2])) {
+            done = args[2];
+            options = args[1];
+            output = null;
+        }
+    } else if (arguments.length === 2) {
+        // input, done
+        if (_.isFunction(args[1])) {
+            done = args[1];
+            options = null;
+            output = null;
+        }
+        // input, options
+        else if (_.isObject(args[1])) {
+            options = args[1];
+            done = null;
+            output = null;
+        }
     }
 
+    // Default values for done and options so we dont error
+    done || (done = function (err, compiledOutput) {
+        if (err) {
+            throw err;
+        } else {
+            process.stdout.write(compiledOutput);
+        }
+    });
+    options || (options = {});
+
     _.defaults(options, {
-        dontTransformMixins: false,
-        dontRemoveMixins: false,
+        transformMixins: false,
         jade: {},
-        amdDependencies: [],
-        inlineJadeRuntime: true,
         globOptions: {}
     });
 
-
-    if (typeof templateDirectories === "string") {
-        templateDirectories = glob.sync(templateDirectories, options.globOptions);
-    }
-
-    var amdModuleDependencies = '';
-    var amdDependencies = '';
-
-    if(_.isArray(options.amdDependencies) && !_.isEmpty(options.amdDependencies)) {
-        amdModuleDependencies = "'" + options.amdDependencies.join("','") + "'";
-        amdDependencies = options.amdDependencies.toString();
-    }
-
-    var namespace = _.isString(options.namespace.parent) ? options.namespace.parent : '';
-    var folders = [];
-    var templates = [];
-    var _readTemplates = [];
     var isWindows = process.platform === 'win32';
     var pathSep = path.sep || (isWindows ? '\\' : '/');
     var pathSepRegExp = /\/|\\/g;
-
-    // Split our namespace on '.' and use bracket syntax
-    if (namespace) {
-        namespace = bracketedName(namespace.split('.'));
-    }
-
-    // Find jade runtime and create minified code
-    // where it is assigned to the variable jade
-    var placesToLook = [
-        __dirname + '/node_modules/jade/lib/runtime.js',
-        __dirname + '/jaderuntime.js'
-    ];
-    var jadeRuntime = fs.readFileSync(_.find(placesToLook, fs.existsSync)).toString();
-    var wrappedJade = uglifyjs.minify('var jade = (function(){var exports={};' + jadeRuntime + 'return exports;})();', {fromString: true}).code;
-
-    var outputTemplate = fs.readFileSync(__dirname + '/output_template.js').toString();
-    var output = '';
-
-    var jadeCompileOptions = {
+    var jadeCompileOptions = _.extend({
         client: true,
         compileDebug: false,
         pretty: false
-    };
-    _.extend(jadeCompileOptions, options.jade);
+    }, options.jade);
 
-    templateDirectories = _.chain(templateDirectories)
-   .map(function (templateDirectory) {
-        if(path.extname(templateDirectory).length > 1) {
-            // Remove filename and ext
-            return path.dirname(templateDirectory).replace(pathSepRegExp, pathSep);
-        }
-        return templateDirectory.replace(pathSepRegExp, pathSep);
-    })
-   .uniq()
-   .each(function (templateDirectory) {
-        if (!fs.existsSync(templateDirectory)) {
-            throw new Error('Template directory ' + templateDirectory + ' does not exist.');
-        }
+    async.waterfall([
+        function (cb) {
+            if (typeof input === "string") {
+                glob(input, options.globOptions, cb);
+            } else {
+                cb(null, input);
+            }
+        },
+        function (matches, cb) {
+             var directories = _.chain(matches)
+            .map(function (templateDirectory) {
+                 if (path.extname(templateDirectory).length > 1) {
+                     // Remove filename and ext
+                     return path.dirname(templateDirectory).replace(pathSepRegExp, pathSep);
+                 }
+                 return templateDirectory.replace(pathSepRegExp, pathSep);
+             })
+            .uniq()
+            .value();
 
-        walkdir.sync(templateDirectory).forEach(function (file) {
-            var item = file.replace(path.resolve(templateDirectory), '').slice(1);
-            // Skip hidden files
-            if (item.charAt(0) === '.' || item.indexOf(pathSep + '.') !== -1) {
-              return;
+            if (!directories || directories.length === 0) {
+                return cb(new Error(input + ' did not match anything existing'));
             }
 
-            // Skip files not matching the initial globbing pattern
-            if(options.globOptions.ignore) {
-                var match = function (ignorePattern) {
-                    return minimatch(file, ignorePattern);
-                };
-                if(options.globOptions.ignore.some(match)) {
-                    return;
-                }
-            }
-
-            if (path.extname(item) === '' && path.basename(item).charAt(0) !== '.') {
-                if (folders.indexOf(item) === -1) folders.push(item);
-            } else if (path.extname(item) === '.jade') {
-                // Throw an err if we are about to override a template
-                if (_readTemplates.indexOf(item) > -1) {
-                    throw new Error(item + ' from ' + templateDirectory + pathSep + item + ' already exists in ' + templates[_readTemplates.indexOf(item)]);
-                }
-                _readTemplates.push(item);
-                templates.push(templateDirectory + pathSep + item);
-            }
-        });
-    })
-   .value();
-
-   folders = _.sortBy(folders, function (folder) {
-       var arr = folder.split(pathSep);
-       return arr.length;
-   });
-
-    output += folders.map(function (folder) {
-        return options.namespace.name + bracketedName(folder.split(pathSep)) + ' = {};';
-    }).join('\n') + '\n';
-
-    templates.forEach(function (item) {
-        var name = path.basename(item, '.jade');
-        var dirString = function () {
-            var itemTemplateDir = _.find(templateDirectories, function (templateDirectory) {
-                return item.indexOf(templateDirectory + pathSep) === 0;
+            async.each(directories, function (dir, dirDone) {
+                fs.exists(dir, function (exists) {
+                    if (!exists) {
+                        dirDone(new Error('Template directory ' + dir + ' does not exist.'));
+                    } else {
+                        dirDone(null);
+                    }
+                });
+            }, function (err) {
+                cb(err, err ? null : directories);
             });
-            var dirname = path.dirname(item).replace(itemTemplateDir, '');
-            if (dirname === '.') return name;
-            dirname += '.' + name;
-            return dirname.substring(1).replace(pathSepRegExp, '.');
-        }();
+        },
+        function (directories, cb) {
+            var folders = [];
+            var templates = [];
+            var _readTemplates = [];
+            var conflicts = [];
 
-        if (options.dontRemoveMixins) {
-            jadeCompileOptions.compiler = DynamicMixinsCompiler;
-        }
+            async.each(directories, function (dir, dirDone) {
+                var walker = walkdir(dir);
 
-        jadeCompileOptions.filename = item;
-        var template = beautify(jade.compileClient(fs.readFileSync(item, 'utf-8'), jadeCompileOptions).toString());
+                walker.on('path', function (file) {
+                    var item = file.replace(path.resolve(dir), '').slice(1);
 
-        template = renameJadeFn(template, dirString);
-        template = simplifyTemplate(template);
+                    // Skip hidden files
+                    if (item.charAt(0) === '.' || item.indexOf(pathSep + '.') !== -1) {
+                      return;
+                    }
 
-        var mixins = [];
-        if (!options.dontTransformMixins) {
-            var astResult = transformMixins({
-                template: template,
-                name: name,
-                dir: dirString,
-                rootName: options.namespace.name
+                    // Skip files not matching the initial globbing pattern
+                    if (options.globOptions.ignore) {
+                        var match = function (ignorePattern) {
+                            return minimatch(file, ignorePattern);
+                        };
+                        if (options.globOptions.ignore.some(match)) {
+                            return;
+                        }
+                    }
+
+                    if (path.extname(item) === '' && path.basename(item).charAt(0) !== '.') {
+                        if (folders.indexOf(item) === -1) folders.push(item);
+                    } else if (path.extname(item) === '.jade') {
+                        // Store an err if we are about to override a template
+                        if (_readTemplates.indexOf(item) > -1) {
+                            conflicts.push(item + ' from ' + dir + pathSep + item + ' already exists in ' + templates[_readTemplates.indexOf(item)]);
+                        } else {
+                            _readTemplates.push(item);
+                            templates.push(dir + pathSep + item);
+                        }
+                    }
+                });
+
+                walker.on('end', function () {
+                    if (conflicts.length) {
+                        dirDone(new Error(conflicts.join(', ')));
+                    } else {
+                        dirDone(null);
+                    }
+                });
+            }, function (err) {
+                cb(err, {templates: templates, folders: folders, directories: directories});
             });
-            mixins = astResult.mixins;
-            template = astResult.template;
+        },
+        function (results, cb) {
+            var directories = results.directories;
+            var folders = results.folders;
+            var templates = results.templates;
+
+            var compiledOutput = _.sortBy(folders, function (folder) {
+                var arr = folder.split(pathSep);
+                return arr.length;
+            }).map(function (folder) {
+                return NAMESPACE + bracketedName(folder.split(pathSep)) + ' = {};';
+            }).join('\n') + '\n';
+
+            async.eachSeries(templates, function (item, readDone) {
+                fs.readFile(item, {encoding: 'utf-8'}, function (err, rawTemplate) {
+                    if (err) {
+                        readDone(err);
+                    } else {
+                        var name = path.basename(item, '.jade');
+                        var dirString = function () {
+                            var itemTemplateDir = _.find(directories, function (templateDirectory) {
+                                return item.indexOf(templateDirectory + pathSep) === 0;
+                            });
+                            var dirname = path.dirname(item).replace(itemTemplateDir, '');
+                            if (dirname === '.') return name;
+                            dirname += '.' + name;
+                            return dirname.substring(1).replace(pathSepRegExp, '.');
+                        }();
+
+                        // If we are transforming mixins then use the dynamic
+                        // compiler so unused mixins are never removed
+                        if (options.transformMixins) {
+                            jadeCompileOptions.compiler = DynamicMixinsCompiler;
+                        }
+                        jadeCompileOptions.filename = item;
+
+                        var template = beautify(jade.compileClient(rawTemplate, jadeCompileOptions).toString());
+
+                        template = renameJadeFn(template, dirString);
+                        template = simplifyTemplate(template);
+
+                        var mixins = [];
+                        if (options.transformMixins) {
+                            var astResult = transformMixins({
+                                template: template,
+                                name: name,
+                                dir: dirString,
+                                rootName: NAMESPACE
+                            });
+                            mixins = astResult.mixins;
+                            template = astResult.template;
+                        }
+
+                        compiledOutput += namedTemplateFn({
+                            dir: dirString,
+                            rootName: NAMESPACE,
+                            fn: template
+                        });
+
+                        compiledOutput += mixins.join('\n');
+
+                        readDone(null);
+                    }
+                });
+            }, function (err) {
+                cb(err, compiledOutput);
+            });
         }
+    ],
+    function (err, compiledOutput) {
+        if (err) {
+            done(err);
+        } else {
+            var commonJSOutput = "var jade = require('jade-runtime');\n\n" + 
+                "var " + NAMESPACE + " = {};\n\n" +
+                compiledOutput + "\n\n" +
+                "module.exports = " + NAMESPACE + ";\n";
 
-        output += namedTemplateFn({
-            dir: dirString,
-            rootName: options.namespace.name,
-            fn: template
-        });
-
-        output += mixins.join('\n');
+            if (output) {
+                fs.writeFile(output, commonJSOutput, function (fileErr) {
+                    done(fileErr, fileErr ? null : commonJSOutput);
+                });
+            } else {
+                done(null, commonJSOutput);
+            }
+        }
     });
-
-    var indentOutput = indent(output);
-    var checkParent = [
-        "if (typeof root{{namespace}} === 'undefined' || root{{namespace}} !== Object(root{{namespace}})) {",
-        options.namespace.defineParent ?
-            "    root{{namespace}} = {};" :
-            "    throw new Error('templatizer: window{{namespace}} does not exist or is not an object');",
-        "}"
-    ].join('\n');
-
-    if(!options.inlineJadeRuntime) {
-        wrappedJade = '';
-    }
-
-    var finalOutput = outputTemplate
-        .replace('{{checkParent}}', indent(checkParent, 8))
-        .replace(/\{\{namespace\}\}/g, namespace)
-        .replace(/\{\{internalNamespace\}\}/g, options.namespace.name)
-        .replace('{{jade}}', wrappedJade)
-        .replace('{{code}}', indentOutput)
-        .replace('{{amdModuleDependencies}}', amdModuleDependencies)
-        .replace('{{amdDependencies}}', amdDependencies);
-
-    if (outputFile) fs.writeFileSync(outputFile, finalOutput);
-
-    return finalOutput;
 };

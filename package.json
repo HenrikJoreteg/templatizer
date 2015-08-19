@@ -16,6 +16,7 @@
     }
   ],
   "dependencies": {
+    "async": "^1.4.2",
     "escodegen": "1.6.1",
     "esprima": "^2.5.0",
     "falafel": "^1.2.0",
@@ -32,10 +33,14 @@
     "colors": "^1.1.2",
     "http-server": "^0.8.0",
     "jshint": "^2.8.0",
-    "phantomjs": "^1.9.18",
+    "mkdirp": "^0.5.1",
+    "phantomjs": "^1.9.7-15",
     "precommit-hook": "^3.0.0",
-    "requirejs": "^2.1.20",
-    "testee": "^0.2.0",
+    "rimraf": "^2.4.2",
+    "run-browser": "^2.0.2",
+    "tap-spec": "^4.0.2",
+    "tape": "^4.2.0",
+    "tape-run": "^1.1.0",
     "underscore": "^1.8.3",
     "yetify": "0.1.0"
   },
@@ -47,20 +52,23 @@
   ],
   "license": "MIT",
   "main": "templatizer.js",
+  "peerDependencies": {
+    "jade-runtime": "^1.1.0"
+  },
+  "pre-commit": [
+    "lint",
+    "validate",
+    "test"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/HenrikJoreteg/templatizer.git"
   },
   "scripts": {
     "benchmark": "node benchmark/speedtest.js",
-    "browserify": "./node_modules/.bin/browserify test/tests-browserify.js > test/tests-browserify-bundle.js",
-    "build": "npm run copy-runtime && node build.js",
-    "copy-require": "cp node_modules/requirejs/require.js test/require.js",
-    "copy-runtime": "cp node_modules/jade/lib/runtime.js jaderuntime.js",
-    "copy-underscore": "cp node_modules/underscore/underscore.js test/underscore.js",
     "lint": "jshint .",
-    "setup-test": "npm run build && npm run browserify && npm run copy-underscore && npm run copy-require",
-    "start": "npm run setup-test && http-server -p 3003 test/",
-    "test": "npm run setup-test && testee test/index.html"
+    "start": "run-browser test/index.js",
+    "test": "node test/build && browserify test/index.js | tape-run -b phantom | tap-spec",
+    "validate": "npm ls"
   }
 }
