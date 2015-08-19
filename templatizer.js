@@ -239,7 +239,8 @@ module.exports = function (input, output, options, done) {
         if (err) {
             done(err);
         } else {
-            var commonJSOutput = "var jade = require('jade-runtime');\n\n" + 
+            var commonJSOutput = "var jade = require('jade-runtime');\n" +
+                "jade.cls = jade.classes;\n\n" + // Work with jade v1.11.0 for now
                 "var " + NAMESPACE + " = {};\n\n" +
                 compiledOutput + "\n\n" +
                 "module.exports = " + NAMESPACE + ";\n";
