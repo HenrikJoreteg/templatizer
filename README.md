@@ -76,6 +76,8 @@ The awesome thing is... they're just functions at this point. Crazy fast, SO MUC
 
 When this happens, you'll want to run the following `npm install jade-runtime` to install it yourself.
 
+**Note: the currently published [`jade-runtime`](https://www.npmjs.com/package/jade-runtime) only works with the upcoming `jade@2.x.y` release. For now `templatizer` uses an npm publically scoped module that is a copy of the current runtime [`@lukekarrys/jade-runtime`](https://www.npmjs.com/package/@lukekarrys/jade-runtime). This will be changed once jade@2.x.y is released.**
+
 ## API
 
 ```js
@@ -201,6 +203,9 @@ $ templatizer -d path/to/templates -o /path/to/output/templates.js
 Run `npm test` to run the tests (you'll need phantomjs installed). You can also run the tests in your browser with `npm start` and going to [http://localhost:3003](http://localhost:3003).
 
 ## Changelog
+
+- 2.0.2
+  - Use publically scoped runtime from [`@lukekarrys/jade-runtime`](https://www.npmjs.com/package/@lukekarrys/jade-runtime)
 
 - 2.0.0 Breaking Changes:
   - **Async API** Pass a callback as the last parameter with the signature `function (err, templates) {}` to know when compilation is complete.
