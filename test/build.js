@@ -66,6 +66,15 @@ test('Can build to a file with options', function (t) {
     });
 });
 
+test('Error callback is invoked when the jade template contains syntax errors', function (t) {
+    var name = Math.random().toString().slice(2);
+    templatizer(i('invalidTemplates'), o(name), {jade: {compileDebug: true}}, function (err, templates) {
+        t.ok(err);
+        t.notOk(!!templates);
+        t.end();
+    });
+});
+
 // These are required for the browser test
 test('Built other options without errors', function (t) {
     async.each([

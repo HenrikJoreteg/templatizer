@@ -202,8 +202,14 @@ module.exports = function (input, output, options, done) {
                         }
                         jadeCompileOptions.filename = item;
 
-                        var template = beautify(jade.compileClient(rawTemplate, jadeCompileOptions).toString());
-
+                        var compiledTemplate;
+                        try {
+                            compiledTemplate = jade.compileClient(rawTemplate, jadeCompileOptions);
+                        } catch (e) {
+                            cb(e);
+                            return;
+                        }
+                        var template = beautify(compiledTemplate.toString());
                         template = renameJadeFn(template, dirString);
                         template = simplifyTemplate(template);
 
