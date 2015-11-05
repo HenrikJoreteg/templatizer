@@ -29,6 +29,7 @@
     "walkdir": "0.0.10"
   },
   "devDependencies": {
+    "@lukekarrys/jade-runtime": "^1.11.1",
     "browserify": "^11.0.1",
     "colors": "^1.1.2",
     "http-server": "^0.8.0",

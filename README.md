@@ -204,6 +204,9 @@ Run `npm test` to run the tests (you'll need phantomjs installed). You can also 
 
 ## Changelog
 
+- 2.0.3
+  - Return err from callback on jade compile errors ([#94](https://github.com/HenrikJoreteg/templatizer/pull/94) [@klausbayrhammer](https://github.com/klausbayrhammer))
+
 - 2.0.2
   - Use publically scoped runtime from [`@lukekarrys/jade-runtime`](https://www.npmjs.com/package/@lukekarrys/jade-runtime)
 
