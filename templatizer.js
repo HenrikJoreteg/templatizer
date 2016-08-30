@@ -79,7 +79,6 @@ module.exports = function (input, output, options, done) {
         compileDebug: false,
         pretty: false
     }, options.jade);
-
     async.waterfall([
         function (cb) {
             if (typeof input === "string") {
@@ -121,8 +120,8 @@ module.exports = function (input, output, options, done) {
             var templates = [];
             var _readTemplates = [];
             var conflicts = [];
-            var files = [];
             async.each(directories, function (dir, dirDone) {
+                var files = [];
                 var walker = walkdir(dir);
                 walker.on('path', function (file) {
                     files.push(file);
@@ -133,10 +132,9 @@ module.exports = function (input, output, options, done) {
                     async.each(files, function (file, done) {
 
                         var item = file.replace(path.resolve(dir), '').slice(1);
-
                         // Skip hidden files
                         if (item.charAt(0) === '.' || item.indexOf(pathSep + '.') !== -1) {
-                            return;
+                            return done();
                         }
 
                         // Skip files not matching the initial globbing pattern
@@ -145,7 +143,7 @@ module.exports = function (input, output, options, done) {
                                 return minimatch(file, ignorePattern);
                             };
                             if (options.globOptions.ignore.some(match)) {
-                                return;
+                                return done();
                             }
                         }
 
@@ -178,14 +176,12 @@ module.exports = function (input, output, options, done) {
             var directories = results.directories;
             var folders = results.folders;
             var templates = results.templates;
-
             var compiledOutput = _.sortBy(folders, function (folder) {
                 var arr = folder.split(pathSep);
                 return arr.length;
             }).map(function (folder) {
                 return NAMESPACE + bracketedName(folder.split(pathSep)) + ' = {};';
             }).join('\n') + '\n';
-
             async.eachSeries(templates, function (item, readDone) {
                 fs.readFile(item, { encoding: 'utf-8' }, function (err, rawTemplate) {
                     if (err) {
