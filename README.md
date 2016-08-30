@@ -122,7 +122,7 @@ templatizer(templatesDir, outputFile, {
 
 ##### `pug` (string, default 'jade')
 
-This will compile your pug files. NOTE: If you run with this option, it WILL NOT compile your jade. You either 
+This will compile your pug files. NOTE: If you run with this option, it WILL NOT compile your jade.
 
 ```js
 templatizer(templatesDir,outputFile,{
