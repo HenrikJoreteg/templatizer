@@ -120,6 +120,17 @@ templatizer(templatesDir, outputFile, {
 });
 ```
 
+##### `pug` (string, default 'jade')
+
+This will compile your pug files. NOTE: If you run with this option, it WILL NOT compile your jade. You either 
+
+```js
+templatizer(templatesDir,outputFile,{
+  // Options
+  templateType:'pug'
+})
+```
+
 ##### `globOptions` (object, default `{}`)
 
 `globOptions` will be passed directly to `node-glob`. See the [API docs](https://github.com/isaacs/node-glob#options) for available options.

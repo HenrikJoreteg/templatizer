@@ -28,6 +28,12 @@ var NAMESPACE = 'templatizer';
 module.exports = function (input, output, options, done) {
     var args = arguments;
 
+    if (options.templateType == 'pug') {
+        options.templateType = 'pug'
+    } else {
+        options.templateType = 'jade'
+    }
+
     if (args.length === 3) {
         // input, output, done
         if (_.isString(args[1]) && _.isFunction(args[2])) {
@@ -145,7 +151,7 @@ module.exports = function (input, output, options, done) {
 
                     if (path.extname(item) === '' && path.basename(item).charAt(0) !== '.') {
                         if (folders.indexOf(item) === -1) folders.push(item);
-                    } else if (path.extname(item) === '.jade') {
+                    } else if (path.extname(item) === '.' + options.templateType) {
                         // Store an err if we are about to override a template
                         if (_readTemplates.indexOf(item) > -1) {
                             conflicts.push(item + ' from ' + dir + pathSep + item + ' already exists in ' + templates[_readTemplates.indexOf(item)]);
@@ -184,7 +190,7 @@ module.exports = function (input, output, options, done) {
                     if (err) {
                         readDone(err);
                     } else {
-                        var name = path.basename(item, '.jade');
+                        var name = path.basename(item, '.' + options.templateType);
                         var dirString = function () {
                             var itemTemplateDir = _.find(directories, function (templateDirectory) {
                                 return item.indexOf(templateDirectory + pathSep) === 0;

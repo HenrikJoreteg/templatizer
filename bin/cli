@@ -13,7 +13,7 @@ var argv = parseArgs(process.argv.slice(2), {
 
 var usage = [
     '  ',
-    '  Templatizer: convert directory of jade templates, to a precompile file of template functions',
+    '  Templatizer: convert directory of jade/pug templates, to a precompile file of template functions',
     '  ',
     '    Usage examples:',
     '  ',
