@@ -16,7 +16,7 @@ var bracketedName = require('./lib/bracketedName');
 
 // Setting dynamicMixins to true will result in
 // all mixins being written to the file
-function DynamicMixinsCompiler () {
+function DynamicMixinsCompiler() {
     jade.Compiler.apply(this, arguments);
     this.dynamicMixins = true;
 }
@@ -79,7 +79,6 @@ module.exports = function (input, output, options, done) {
         compileDebug: false,
         pretty: false
     }, options.jade);
-
     async.waterfall([
         function (cb) {
             if (typeof input === "string") {
@@ -89,16 +88,16 @@ module.exports = function (input, output, options, done) {
             }
         },
         function (matches, cb) {
-             var directories = _.chain(matches)
-            .map(function (templateDirectory) {
-                 if (path.extname(templateDirectory).length > 1) {
-                     // Remove filename and ext
-                     return path.dirname(templateDirectory).replace(pathSepRegExp, pathSep);
-                 }
-                 return templateDirectory.replace(pathSepRegExp, pathSep);
-             })
-            .uniq()
-            .value();
+            var directories = _.chain(matches)
+                .map(function (templateDirectory) {
+                    if (path.extname(templateDirectory).length > 1) {
+                        // Remove filename and ext
+                        return path.dirname(templateDirectory).replace(pathSepRegExp, pathSep);
+                    }
+                    return templateDirectory.replace(pathSepRegExp, pathSep);
+                })
+                .uniq()
+                .value();
 
             if (!directories || directories.length === 0) {
                 return cb(new Error(input + ' did not match anything existing'));
@@ -121,66 +120,70 @@ module.exports = function (input, output, options, done) {
             var templates = [];
             var _readTemplates = [];
             var conflicts = [];
-
             async.each(directories, function (dir, dirDone) {
+                var files = [];
                 var walker = walkdir(dir);
-
                 walker.on('path', function (file) {
-                    var item = file.replace(path.resolve(dir), '').slice(1);
-
-                    // Skip hidden files
-                    if (item.charAt(0) === '.' || item.indexOf(pathSep + '.') !== -1) {
-                      return;
-                    }
-
-                    // Skip files not matching the initial globbing pattern
-                    if (options.globOptions.ignore) {
-                        var match = function (ignorePattern) {
-                            return minimatch(file, ignorePattern);
-                        };
-                        if (options.globOptions.ignore.some(match)) {
-                            return;
-                        }
-                    }
-
-                    if (path.extname(item) === '' && path.basename(item).charAt(0) !== '.') {
-                        if (folders.indexOf(item) === -1) folders.push(item);
-                    } else if (path.extname(item) === '.jade') {
-                        // Store an err if we are about to override a template
-                        if (_readTemplates.indexOf(item) > -1) {
-                            conflicts.push(item + ' from ' + dir + pathSep + item + ' already exists in ' + templates[_readTemplates.indexOf(item)]);
-                        } else {
-                            _readTemplates.push(item);
-                            templates.push(dir + pathSep + item);
-                        }
-                    }
+                    files.push(file);
                 });
 
                 walker.on('end', function () {
-                    if (conflicts.length) {
-                        dirDone(new Error(conflicts.join(', ')));
-                    } else {
-                        dirDone(null);
-                    }
+                    files.sort();
+                    async.each(files, function (file, done) {
+
+                        var item = file.replace(path.resolve(dir), '').slice(1);
+                        // Skip hidden files
+                        if (item.charAt(0) === '.' || item.indexOf(pathSep + '.') !== -1) {
+                            return done();
+                        }
+
+                        // Skip files not matching the initial globbing pattern
+                        if (options.globOptions.ignore) {
+                            var match = function (ignorePattern) {
+                                return minimatch(file, ignorePattern);
+                            };
+                            if (options.globOptions.ignore.some(match)) {
+                                return done();
+                            }
+                        }
+
+                        if (path.extname(item) === '' && path.basename(item).charAt(0) !== '.') {
+                            if (folders.indexOf(item) === -1) folders.push(item);
+                        } else if (path.extname(item) === '.jade') {
+                            // Store an err if we are about to override a template
+                            if (_readTemplates.indexOf(item) > -1) {
+                                conflicts.push(item + ' from ' + dir + pathSep + item + ' already exists in ' + templates[_readTemplates.indexOf(item)]);
+                            } else {
+                                _readTemplates.push(item);
+                                templates.push(dir + pathSep + item);
+                            }
+                        }
+                        done();
+                    }, function (err) {
+                        if (err) { return dirDone(err); }
+                        if (conflicts.length) {
+                            dirDone(new Error(conflicts.join(', ')));
+                        } else {
+                            dirDone(null);
+                        }
+                    });
                 });
             }, function (err) {
-                cb(err, {templates: templates, folders: folders, directories: directories});
+                cb(err, { templates: templates, folders: folders, directories: directories });
             });
         },
         function (results, cb) {
             var directories = results.directories;
             var folders = results.folders;
             var templates = results.templates;
-
             var compiledOutput = _.sortBy(folders, function (folder) {
                 var arr = folder.split(pathSep);
                 return arr.length;
             }).map(function (folder) {
                 return NAMESPACE + bracketedName(folder.split(pathSep)) + ' = {};';
             }).join('\n') + '\n';
-
             async.eachSeries(templates, function (item, readDone) {
-                fs.readFile(item, {encoding: 'utf-8'}, function (err, rawTemplate) {
+                fs.readFile(item, { encoding: 'utf-8' }, function (err, rawTemplate) {
                     if (err) {
                         readDone(err);
                     } else {
@@ -193,7 +196,7 @@ module.exports = function (input, output, options, done) {
                             if (dirname === '.') return name;
                             dirname += '.' + name;
                             return dirname.substring(1).replace(pathSepRegExp, '.');
-                        }();
+                        } ();
 
                         // If we are transforming mixins then use the dynamic
                         // compiler so unused mixins are never removed
@@ -241,22 +244,22 @@ module.exports = function (input, output, options, done) {
             });
         }
     ],
-    function (err, compiledOutput) {
-        if (err) {
-            done(err);
-        } else {
-            var commonJSOutput = "var jade = require('@lukekarrys/jade-runtime');\n\n" +
-                "var " + NAMESPACE + " = {};\n\n" +
-                compiledOutput + "\n\n" +
-                "module.exports = " + NAMESPACE + ";\n";
-
-            if (output) {
-                fs.writeFile(output, commonJSOutput, function (fileErr) {
-                    done(fileErr, fileErr ? null : commonJSOutput);
-                });
+        function (err, compiledOutput) {
+            if (err) {
+                done(err);
             } else {
-                done(null, commonJSOutput);
+                var commonJSOutput = "var jade = require('@lukekarrys/jade-runtime');\n\n" +
+                    "var " + NAMESPACE + " = {};\n\n" +
+                    compiledOutput + "\n\n" +
+                    "module.exports = " + NAMESPACE + ";\n";
+
+                if (output) {
+                    fs.writeFile(output, commonJSOutput, function (fileErr) {
+                        done(fileErr, fileErr ? null : commonJSOutput);
+                    });
+                } else {
+                    done(null, commonJSOutput);
+                }
             }
-        }
-    });
+        });
 };
