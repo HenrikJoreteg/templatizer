@@ -6,6 +6,8 @@
 
 Simple solution for compiling jade templates into vanilla JS functions for blazin' fast client-side use.
 
+**If you're looking for something that works with [`pug`](https://pugjs.org/api/getting-started.html), check out [`puglatizer`](https://github.com/happilymarrieddad/puglatizer).**
+
 **v2 has been released. See the [changelog](#changelog) for breaking changes.**
 
 ## What is this?
