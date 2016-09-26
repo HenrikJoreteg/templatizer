@@ -20,7 +20,7 @@
     "escodegen": "1.6.1",
     "esprima": "^2.5.0",
     "falafel": "^1.2.0",
-    "glob": "^5.0.14",
+    "glob": "^7.1.0",
     "jade": "^1.11.0",
     "lodash": "^3.10.1",
     "minimatch": "^2.0.10",
