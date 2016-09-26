@@ -19,7 +19,7 @@
     "async": "^1.4.2",
     "escodegen": "1.6.1",
     "esprima": "^3.0.0",
-    "falafel": "^1.2.0",
+    "falafel": "^2.0.0",
     "glob": "^7.1.0",
     "jade": "^1.11.0",
     "lodash": "^3.10.1",
