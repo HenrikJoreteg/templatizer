@@ -1,7 +1,7 @@
 {
   "name": "templatizer",
   "description": "Simple solution for compiling jade templates into vanilla JS functions for blazin' fast client-side use.",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "author": "Henrik Joreteg <henrik@andyet.net>",
   "bin": "./bin/cli",
   "bugs": "https://github.com/HenrikJoreteg/templatizer/issues",
@@ -18,7 +18,7 @@
   "dependencies": {
     "async": "^2.0.1",
     "escodegen": "^1.8.1",
-    "esprima": "^3.0.0",
+    "esprima": "^2.5.0",
     "falafel": "^2.0.0",
     "glob": "^7.1.0",
     "jade": "^1.11.0",
