@@ -18,7 +18,7 @@
   "dependencies": {
     "async": "^2.0.1",
     "escodegen": "^1.8.1",
-    "esprima": "^3.0.0",
+    "esprima": "^2.5.0",
     "falafel": "^2.0.0",
     "glob": "^7.1.0",
     "jade": "^1.11.0",
