@@ -122,7 +122,10 @@ module.exports = function (input, output, options, done) {
             var conflicts = [];
             async.each(directories, function (dir, dirDone) {
                 var files = [];
-                var walker = walkdir(dir);
+                var walker = walkdir(dir, {
+                  max_depth: 20,
+                  track_inodes: false
+                });
                 walker.on('path', function (file) {
                     files.push(file);
                 });
